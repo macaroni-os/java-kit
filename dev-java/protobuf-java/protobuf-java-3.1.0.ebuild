@@ -1,5 +1,6 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Id$
 
 EAPI=6
 JAVA_PKG_IUSE="doc source"
@@ -13,9 +14,9 @@ DESCRIPTION="Google's Protocol Buffers - official Java Bindings"
 HOMEPAGE="https://github.com/google/protobuf/ https://developers.google.com/protocol-buffers/"
 SRC_URI="https://github.com/google/protobuf/archive/v${MY_PV}.tar.gz -> protobuf-${PV}.tar.gz"
 
-LICENSE="BSD"
+LICENSE="Apache-2.0"
 SLOT="0/11"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~sh ~x86 ~amd64-linux ~arm-linux ~x86-linux ~x64-macos ~x86-macos"
+KEYWORDS="~amd64 ~arm ~arm64 ~mips ~ppc64 ~sh ~x86 ~amd64-linux ~arm-linux ~x86-linux ~x64-macos ~x86-macos"
 IUSE="nano"
 
 # Protobuf is only a build-time dep, but depends on the exact same version

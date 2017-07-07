@@ -1,5 +1,6 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Id$
 
 EAPI=5
 
@@ -76,9 +77,6 @@ src_configure() {
 		echo -e "#!/bin/sh\necho gjdoc 0.8" > tools/gjdoc.build || die
 		chmod 755 tools/gjdoc.build || die
 	fi
-
-	# Force Qt version, bug #619004.
-	export QT_SELECT=qt4
 
 	ANTLR= ./configure \
 		$(use_enable alsa) \

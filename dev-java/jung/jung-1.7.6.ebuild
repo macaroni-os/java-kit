@@ -1,5 +1,6 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Id$
 
 EAPI="2"
 JAVA_PKG_IUSE="doc source"
@@ -31,7 +32,7 @@ PATCHES=( "${FILESDIR}/${P}-build.xml.patch" )
 S="${WORKDIR}/src"
 
 java_prepare() {
-	epatch "${PATCHES[@]}"
+	epatch ${PATCHES}
 	rm -R doc/*
 	find "${WORKDIR}" -iname '*.jar' -delete
 	find "${WORKDIR}" -iname '*.class' -delete

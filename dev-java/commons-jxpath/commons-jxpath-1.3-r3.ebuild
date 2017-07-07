@@ -1,5 +1,6 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Id$
 
 EAPI=5
 
@@ -13,7 +14,8 @@ SRC_URI="mirror://apache/commons/jxpath/source/${P}-src.tar.gz -> ${P}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="amd64 ppc64 x86 ~x86-fbsd"
+KEYWORDS="~amd64 ~ppc64 ~x86 ~x86-fbsd"
+IUSE=""
 
 S="${WORKDIR}/${P}-src"
 

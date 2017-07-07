@@ -1,5 +1,6 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Id$
 
 EAPI=5
 
@@ -17,7 +18,8 @@ SRC_URI="
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~x64-solaris"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~x64-solaris"
+IUSE=""
 
 CDEPEND="
 	dev-java/bcel:0
@@ -34,7 +36,8 @@ RDEPEND="
 
 DEPEND="
 	${CDEPEND}
-	>=virtual/jdk-1.6"
+	>=virtual/jdk-1.6
+	source? ( app-arch/zip )"
 
 JAVA_GENTOO_CLASSPATH="
 	joda-time
