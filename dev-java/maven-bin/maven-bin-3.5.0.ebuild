@@ -1,9 +1,9 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="5"
 
-inherit java-pkg-2
+inherit java-pkg-2 versionator
 
 MY_PN=apache-${PN%%-bin}
 MY_PV=${PV/_alpha/-alpha-}
@@ -15,47 +15,70 @@ SRC_URI="mirror://apache/maven/maven-${MY_MV}/${PV}/binaries/${MY_P}-bin.tar.gz"
 HOMEPAGE="http://maven.apache.org/"
 
 LICENSE="Apache-2.0"
-SLOT="3.1"
-KEYWORDS="amd64 x86"
+SLOT="$(get_version_component_range 1-2)"
+KEYWORDS="~amd64 ~x86"
 
 # TODO: Needs further resolution:
 #
 # - https://bugs.gentoo.org/show_bug.cgi?id=472850
 # - https://bugs.gentoo.org/show_bug.cgi?id=477436
 #
-DEPEND="app-eselect/eselect-java
-	|| ( dev-java/commons-logging:0 dev-java/log4j:0 dev-java/avalon-logkit:2.0 )
-	dev-java/aopalliance:1
-	dev-java/avalon-framework:4.1
-	dev-java/commons-cli:1
-	dev-java/commons-io:1
-	dev-java/javax-inject:0
+CDEPEND="
+	dev-java/juel:0
+	dev-java/log4j:0
 	dev-java/jsoup:0
 	dev-java/jsr250:0
-	dev-java/juel:0
+	dev-java/commons-io:1
+	dev-java/aopalliance:1
+	dev-java/commons-cli:1
+	dev-java/javax-inject:0
 	dev-java/osgi-core-api:0
+	dev-java/commons-logging:0
 	java-virtuals/interceptor-api:0
-	java-virtuals/servlet-api:2.4"
+	java-virtuals/servlet-api:3.0"
 
-RDEPEND=">=virtual/jdk-1.5
-	${DEPEND}"
+DEPEND="
+	${CDEPEND}
+	app-eselect/eselect-java
+	|| ( dev-java/commons-logging:0 dev-java/log4j:0 )
+	>=virtual/jdk-1.7"
+
+RDEPEND="
+	${CDEPEND}
+	>=virtual/jre-1.7"
 
 S="${WORKDIR}/${MY_P}"
 
-MAVEN=${PN}-${SLOT}
+MAVEN="${PN}-${SLOT}"
 MAVEN_SHARE="/usr/share/${MAVEN}"
 
+MAVEN_DEPENDENCIES=(
+	juel
+	jsoup
+	log4j
+	jsr250
+	javax-inject
+	commons-io-1
+	osgi-core-api
+	aopalliance-1
+	commons-cli-1
+	commons-logging
+	interceptor-api
+	servlet-api-3.0
+)
+
 java_prepare() {
-	rm -v bin/*.bat lib/{aopalliance,commons-cli,javax.inject,jsr250}-*.jar || die
+	rm -v bin/*.cmd lib/{aopalliance,commons-cli,javax.inject,jsr250}-*.jar || die
 
 	chmod 644 boot/*.jar lib/*.jar conf/settings.xml || die
 
 	# Symlink jars.
 	cd lib || die
-	java-pkg_jar-from aopalliance-1,avalon-framework-4.1,commons-cli-1,commons-io-1,interceptor-api,javax-inject,jsoup,jsr250,juel,osgi-core-api,servlet-api-2.4
-	has_version dev-java/commons-logging:0 && java-pkg_jar-from commons-logging
-	has_version dev-java/avalon-logkit:2.0 && java-pkg_jar-from avalon-logkit-2.0
-	has_version dev-java/log4j:0 && java-pkg_jar-from log4j
+
+	# Link deps.
+	for mvn_dep in "${MAVEN_DEPENDENCIES[@]}"; do
+		java-pkg_jar-from "${mvn_dep}"
+	done
 }
 
 # TODO: We should use jars from packages, instead of what is bundled.
