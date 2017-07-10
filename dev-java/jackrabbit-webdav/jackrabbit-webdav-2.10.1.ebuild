@@ -1,5 +1,6 @@
 # Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Id$
 
 EAPI="5"
 
@@ -47,7 +48,7 @@ PATCHES=(
 
 java_prepare() {
 	cp "${FILESDIR}"/${P}-build.xml build.xml || die
-	epatch "${PATCHES[@]}"
+	epatch ${PATCHES[@]}
 }
 
 EANT_TEST_GENTOO_CLASSPATH="

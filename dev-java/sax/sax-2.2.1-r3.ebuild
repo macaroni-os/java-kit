@@ -1,5 +1,6 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Id$
 
 EAPI=5
 
@@ -10,15 +11,20 @@ MY_PN="sax2r3"
 inherit java-pkg-2 java-pkg-simple
 
 DESCRIPTION="SAX: Simple API for XML in Java"
-HOMEPAGE="http://sax.sourceforge.net"
+HOMEPAGE="http://sax.sourceforge.net/"
 SRC_URI="mirror://sourceforge/${PN}/${MY_PN}.zip -> ${P}.zip"
 LICENSE="public-domain"
 
 SLOT="0"
-KEYWORDS="amd64 ppc64 x86 ~x86-fbsd ~amd64-linux ~x86-linux ~ppc-macos ~x86-macos"
+KEYWORDS="~amd64 ~ppc64 ~x86 ~x86-fbsd ~x86-freebsd ~amd64-linux ~x86-linux ~ppc-macos ~x86-macos"
+IUSE=""
 
-RDEPEND=">=virtual/jre-1.6"
-DEPEND=">=virtual/jdk-1.6"
+RDEPEND="
+	>=virtual/jre-1.6"
+
+DEPEND="
+	>=virtual/jdk-1.6
+	source? ( app-arch/zip )"
 
 S="${WORKDIR}/sax2r3"
 

@@ -1,5 +1,6 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Id$
 
 EAPI="5"
 
@@ -9,7 +10,7 @@ inherit eutils java-pkg-2 java-ant-2
 
 MY_P="${P}-src"
 
-DESCRIPTION="Reads XML configuration files to provide initialization of various Java objects"
+DESCRIPTION="Reads XML configuration files to provide initialization of various Java objects within the system"
 HOMEPAGE="http://commons.apache.org/digester/"
 SRC_URI="mirror://apache/commons/digester/source/${MY_P}.tar.gz"
 
