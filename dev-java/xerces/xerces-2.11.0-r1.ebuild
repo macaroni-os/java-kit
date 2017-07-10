@@ -1,6 +1,5 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI=5
 JAVA_PKG_IUSE="doc examples source"
@@ -9,7 +8,7 @@ inherit eutils versionator java-pkg-2 java-ant-2
 
 DIST_PN="Xerces-J"
 SRC_PV="$(replace_all_version_separators _ )"
-DESCRIPTION="The next generation of high performance, fully compliant XML parsers in the Apache Xerces family"
+DESCRIPTION="The next generation of high performance, fully compliant XML parsers"
 HOMEPAGE="http://xml.apache.org/xerces2-j/index.html"
 SRC_URI="mirror://apache/${PN}/j/${DIST_PN}-src.${PV}.tar.gz"
 

@@ -1,13 +1,12 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI=5
 JAVA_PKG_IUSE="doc source"
 
 inherit java-pkg-2 java-pkg-simple
 
-DESCRIPTION="Implementations of LzmaInputStream/LzmaOutputStream interacting with underlying LZMA en-/decoders"
+DESCRIPTION="LzmaInputStream/LzmaOutputStream interacting with underlying LZMA en-/decoders"
 HOMEPAGE="http://contrapunctus.net/league/haques/lzmajio/"
 SRC_URI="http://comsci.liu.edu/~league/dist/${PN}/${P}.tar.gz"
 LICENSE="LGPL-2.1"

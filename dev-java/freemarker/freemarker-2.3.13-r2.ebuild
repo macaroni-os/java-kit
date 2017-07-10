@@ -1,6 +1,5 @@
 # Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI="5"
 
@@ -47,7 +46,7 @@ java_prepare() {
 	java-pkg_clean
 
 	# Apply patches.
-	epatch ${PATCHES[@]}
+	epatch "${PATCHES[@]}"
 
 	# Weed out comments (some contain UTF-8 chars javac cannnot deal with).
 	sed -i -e '/*/d;' \
