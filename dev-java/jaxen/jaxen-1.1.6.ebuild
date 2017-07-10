@@ -1,6 +1,5 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI=5
 
@@ -9,7 +8,7 @@ JAVA_PKG_IUSE="doc source"
 inherit java-pkg-2 java-pkg-simple
 
 DESCRIPTION="A Java XPath Engine"
-HOMEPAGE="http://jaxen.codehaus.org/"
+HOMEPAGE="https://github.com/codehaus"
 SRC_URI="https://repo1.maven.org/maven2/${PN}/${PN}/${PV}/${P}-sources.jar -> ${P}.jar"
 
 LICENSE="JDOM"

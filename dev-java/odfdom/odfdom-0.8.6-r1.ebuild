@@ -1,6 +1,5 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI="4"
 
@@ -13,7 +12,7 @@ HOMEPAGE="http://odftoolkit.org/projects/odfdom"
 SRC_URI="http://odftoolkit.org/projects/odfdom/downloads/download/current-version%252F${P}-sources.zip -> ${P}-sources.zip"
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc-aix ~hppa-hpux ~ia64-hpux ~x86-linux ~sparc-solaris ~x86-solaris"
+KEYWORDS="~amd64 ~ppc-aix ~x86-linux ~sparc-solaris ~x86-solaris"
 IUSE=""
 
 CDEPEND="dev-java/xerces:2

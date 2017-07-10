@@ -1,6 +1,5 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI=5
 
@@ -18,7 +17,7 @@ SRC_URI="mirror://gentoo/${JMI_ZIP}
 
 LICENSE="sun-bcla-jmi"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~x86-fbsd"
+KEYWORDS="amd64 x86 ~x86-fbsd"
 
 RDEPEND="
 	>=virtual/jre-1.6"

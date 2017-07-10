@@ -1,6 +1,5 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI="5"
 
@@ -9,7 +8,7 @@ JAVA_PKG_IUSE="doc source test"
 inherit java-pkg-2 java-ant-2
 
 DESCRIPTION="Byte-based encoding support library for Java"
-HOMEPAGE="http://jruby.codehaus.org/"
+HOMEPAGE="https://github.com/codehaus"
 SRC_URI="https://github.com/jruby/${PN}/archive/${P}.tar.gz"
 
 LICENSE="MIT"
