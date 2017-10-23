@@ -1,8 +1,13 @@
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
+EAPI=6
 
-inherit java-vm-2 eutils prefix versionator
+inherit eutils java-vm-2 prefix versionator
+
+# This URIs need updating when bumping!
+JRE_URI="http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html"
+JCE_URI="http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html"
 
 if [[ "$(get_version_component_range 4)" == 0 ]] ; then
 	S_PV="$(get_version_component_range 1-3)"
@@ -13,29 +18,40 @@ fi
 
 MY_PV="$(get_version_component_range 2)${MY_PV_EXT}"
 
-X86_AT="jre-${MY_PV}-linux-i586.tar.gz"
-AMD64_AT="jre-${MY_PV}-linux-x64.tar.gz"
+AT_amd64="jre-${MY_PV}-linux-x64.tar.gz"
+AT_x86="jre-${MY_PV}-linux-i586.tar.gz"
 
 JCE_DIR="UnlimitedJCEPolicyJDK8"
-JCE_FILE="${JCE_DIR}.zip"
+JCE_FILE="jce_policy-8.zip"
 
 DESCRIPTION="Oracle's Java SE Runtime Environment"
 HOMEPAGE="http://www.oracle.com/technetwork/java/javase/"
 SRC_URI="
-	x86? ( mirror://funtoo/oracle-java/${X86_AT} )
-	amd64? ( mirror://funtoo/oracle-java/${AMD64_AT} )
-	jce? ( mirror://funtoo/oracle-java/${JCE_FILE} )"
+	amd64? ( ${AT_amd64} )
+	x86? ( ${AT_x86} )
+	jce? ( ${JCE_FILE} )"
 
 LICENSE="Oracle-BCLA-JavaSE"
 SLOT="1.8"
-KEYWORDS="*"
-IUSE="alsa +awt commercial cups +fontconfig javafx jce nsplugin selinux"
+KEYWORDS="amd64 x86"
+IUSE="alsa commercial cups +fontconfig headless-awt javafx jce nsplugin selinux"
 
-RESTRICT="mirror preserve-libs strip"
+RESTRICT="fetch preserve-libs strip"
 QA_PREBUILT="*"
 
+# NOTES:
+#
+# * cups is dlopened.
+#
+# * libpng is also dlopened but only by libsplashscreen, which isn't
+#   important, so we can exclude that.
+#
+# * We still need to work out the exact AWT and JavaFX dependencies
+#   under MacOS. It doesn't appear to use many, if any, of the
+#   dependencies below.
+#
 RDEPEND="!x64-macos? (
-		 awt? (
+		!headless-awt? (
 			x11-libs/libX11
 			x11-libs/libXext
 			x11-libs/libXi
@@ -62,12 +78,33 @@ RDEPEND="!x64-macos? (
 	!prefix? ( sys-libs/glibc:* )
 	selinux? ( sec-policy/selinux-java )"
 
-# A PaX header isn't created by scanelf so depend on paxctl to avoid
-# fallback marking. See bug #427642.
 DEPEND="app-arch/zip
 	jce? ( app-arch/unzip )"
 
 S="${WORKDIR}/jre"
+
+pkg_nofetch() {
+	local AT_ARCH="AT_${ARCH}"
+	local AT="${!AT_ARCH}"
+
+	einfo "Please download '${AT}' from:"
+	einfo "'${JRE_URI}'"
+	einfo "and move it to '${DISTDIR}'"
+
+	if use jce; then
+		einfo "Also download '${JCE_FILE}' from:"
+		einfo "'${JCE_URI}'"
+		einfo "and move it to '${DISTDIR}'"
+	fi
+
+	einfo
+	einfo "If the above mentioned urls do not point to the correct version anymore,"
+	einfo "please download the files from Oracle's java download archive:"
+	einfo
+	einfo "   http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase8-2177648.html#jre-${MY_PV}-oth-JPR"
+	einfo
+
+}
 
 src_unpack() {
 	default
@@ -79,9 +116,11 @@ src_unpack() {
 }
 
 src_prepare() {
-	if use jce; then
+	if use jce ; then
 		mv "${WORKDIR}"/${JCE_DIR} lib/security/ || die
 	fi
+
+	default
 
 	# Remove the hook that calls Oracle's evil usage tracker. Not just
 	# because it's evil but because it breaks the sandbox during builds
@@ -102,15 +141,15 @@ src_install() {
 	if ! use alsa ; then
 		rm -vf lib/*/libjsoundalsa.* || die
 	fi
-	
-	if ! use awt ; then
+
+	if ! use commercial; then
+		rm -vfr lib/jfr* || die
+	fi
+
+	if use headless-awt ; then
 		rm -vf lib/*/lib*{[jx]awt,splashscreen}* \
 		   bin/{javaws,policytool} || die
 	fi
-	
-	if ! use commercial; then
-		rm -vfr lib/jfr* || die
-	fi	
 
 	if ! use javafx ; then
 		rm -vf lib/*/lib*{decora,fx,glass,prism}* \
@@ -197,8 +236,16 @@ src_install() {
 	# Remove empty dirs we might have copied.
 	find "${D}" -type d -empty -exec rmdir -v {} + || die
 
-	set_java_env
 	java-vm_install-env "${FILESDIR}"/${PN}.env.sh
 	java-vm_revdep-mask
 	java-vm_sandbox-predict /dev/random /proc/self/coredump_filter
+}
+
+pkg_postinst() {
+	java-vm-2_pkg_postinst
+
+	if ! use headless-awt && ! use javafx; then
+		ewarn "You have disabled the javafx flag. Some modern desktop Java applications"
+		ewarn "require this and they may fail with a confusing error message."
+	fi
 }
