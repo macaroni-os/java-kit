@@ -1,8 +1,7 @@
-# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
-JAVA_PKG_IUSE="doc examples source"
+EAPI=6
+JAVA_PKG_IUSE="doc source"
 
 inherit eutils java-pkg-2 java-ant-2 python-utils-r1 flag-o-matic
 
@@ -15,17 +14,14 @@ SRC_URI="http://search.maven.org/remotecontent?filepath=org/python/${PN}/${MY_PV
 
 LICENSE="PSF-2"
 SLOT="2.7"
-KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux ~x86-macos"
-IUSE="+readline test"
-REQUIRED_USE="test? ( readline )"
+KEYWORDS="*"
+IUSE="examples test"
 
-CDEPEND="dev-java/ant-core:0
-	dev-java/antlr:3
+CP_DEPEND="dev-java/antlr:3
 	dev-java/netty-transport:0
 	=dev-java/asm-5.0.3:4
 	dev-java/commons-compress:0
-	dev-java/guava:13
-	>=dev-java/java-config-2.1.11-r3
+	dev-java/guava:20
 	dev-java/jffi:1.2
 	dev-java/jline:2
 	dev-java/icu4j:52
@@ -35,13 +31,14 @@ CDEPEND="dev-java/ant-core:0
 	dev-java/stringtemplate:0
 	dev-java/xerces:2
 	java-virtuals/script-api:0
-	java-virtuals/servlet-api:3.0
-	readline? ( >=dev-java/libreadline-java-0.8.0:0 )"
-RDEPEND="${CDEPEND}
+	java-virtuals/servlet-api:3.0"
+RDEPEND="${CP_DEPEND}
+	app-eselect/eselect-jython
 	>=virtual/jre-1.7"
-DEPEND="${CDEPEND}
+DEPEND="${CP_DEPEND}
 	>=virtual/jdk-1.7
 	app-arch/unzip
+	dev-java/ant-core:0
 	test? (
 		dev-java/junit:4
 		dev-java/ant-junit:0
@@ -52,10 +49,6 @@ S=${WORKDIR}
 RESTRICT="test"
 
 JAVA_ANT_REWRITE_CLASSPATH="yes"
-EANT_GENTOO_CLASSPATH="asm-4,commons-compress,guava-13,jffi-1.2,jline-2,"
-EANT_GENTOO_CLASSPATH+="jnr-constants,script-api,servlet-api-3.0,"
-EANT_GENTOO_CLASSPATH+="stringtemplate,xerces-2,icu4j-52,netty-transport,jnr-posix-3.0"
-
 JAVA_ANT_CLASSPATH_TAGS+=" java"
 
 EANT_BUILD_TARGET="developer-build"
@@ -75,37 +68,25 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.7.0-build.xml.patch
 )
 
-java_prepare() {
+src_prepare() {
+	default
+
 	find \( -name '*.jar' -o -name '*.class' \
 		-o -name '*.pyc' -o -name '*.exe' \) -delete
-
-	epatch "${PATCHES[@]}"
-
-	if ! use readline; then
-		rm -v src/org/python/util/ReadlineConsole.java || die
-	fi
 
 	# needed for launchertest
 	chmod +x tests/shell/test-jython.sh || die
 
-	# apparently this can cause problems
-	append-flags -fno-stack-protector
+	java-pkg-2_src_prepare
 }
 
-src_compile() {
-	use readline && EANT_GENTOO_CLASSPATH+=",libreadline-java"
+src_configure() {
+	# apparently this can cause problems
+	append-flags -fno-stack-protector
 
 	EANT_GENTOO_CLASSPATH_EXTRA="$(java-pkg_getjars --with-dependencies antlr-3,jnr-posix-3.0)"
 	EANT_GENTOO_CLASSPATH_EXTRA+=":$(java-pkg_getjars --build-only ant-core)"
-
-	sed -i -e "1 a\
-		CLASSPATH=\"$(java-pkg_getjars "${EANT_GENTOO_CLASSPATH}"):${EANT_GENTOO_CLASSPATH_EXTRA}\"" \
-		src/shell/jython || die
-
-	java-pkg-2_src_compile
 }
-
-EANT_TEST_GENTOO_CLASSPATH="${EANT_GENTOO_CLASSPATH},junit-4"
 
 src_test() {
 	java-pkg-2_src_test
@@ -138,13 +119,6 @@ src_install() {
 		--main org.python.util.jython \
 		--java_args "${java_args[*]}"
 
-	if use readline; then
-		sed \
-			-e "s/#\(python.console=org.python.util.ReadlineConsole\)/\1/" \
-			-e "/#python.console.readlinelib=JavaReadline/a python.console.readlinelib=GnuReadline" \
-			-i "${ED}"/usr/share/${PN}-${SLOT}/registry || die
-	fi
-
 	# we need a wrapper to help python_optimize
 	cat <<-EOF > "${T}"/jython
 		exec java -cp "$(java-pkg_getjars "${EANT_GENTOO_CLASSPATH}"):${EANT_GENTOO_CLASSPATH_EXTRA}:dist/${PN}-dev.jar" \
@@ -173,19 +147,4 @@ src_install() {
 	# some of the class files end up with newer timestamps than the files they
 	# were generated from, make sure this doesn't happen
 	find "${ED}${instdir}"/Lib/ -name '*.class' | xargs touch
-}
-
-pkg_postinst() {
-	if ! has_version dev-java/jython ; then
-		elog
-		elog "readline can be configured in the registry:"
-		elog
-		elog "python.console=org.python.util.ReadlineConsole"
-		elog "python.console.readlinelib=GnuReadline"
-		elog
-		elog "Global registry: '${EROOT}usr/share/${PN}-${SLOT}/registry'"
-		elog "User registry: '~/.jython'"
-		elog "See http://www.jython.org/docs/registry.html for more information."
-		elog
-	fi
 }
