@@ -1,20 +1,8 @@
-# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI="5"
 
 inherit eutils java-vm-2 prefix versionator
-
-# This URI needs to be updated when bumping!
-JDK_URI="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html"
-
-# This is a list of archs supported by this update.
-# Currently arm comes and goes.
-AT_AVAILABLE=( amd64 arm arm64 x86 x64-solaris sparc64-solaris x64-macos )
-
-# Sometimes some or all of the demos are missing, this is to not have to rewrite half
-# the ebuild when it happens.
-DEMOS_AVAILABLE=( amd64 arm arm64 x86 x64-solaris sparc64-solaris x64-macos )
 
 if [[ "$(get_version_component_range 4)" == 0 ]] ; then
 	S_PV="$(get_version_component_range 1-3)"
@@ -26,54 +14,37 @@ fi
 MY_PV="$(get_version_component_range 2)${MY_PV_EXT}"
 
 AT_amd64="jdk-${MY_PV}-linux-x64.tar.gz"
+AT_arm="jdk-${MY_PV}-linux-arm-vfp-hflt.tar.gz"
 AT_arm="jdk-${MY_PV}-linux-arm32-vfp-hflt.tar.gz"
 AT_arm64="jdk-${MY_PV}-linux-arm64-vfp-hflt.tar.gz"
 AT_x86="jdk-${MY_PV}-linux-i586.tar.gz"
-AT_x64_solaris="jdk-${MY_PV}-solaris-x64.tar.gz"
-AT_sparc64_solaris="${AT_sparc_solaris} jdk-${MY_PV}-solaris-sparcv9.tar.gz"
-AT_x64_macos="jdk-${MY_PV}-macosx-x64.dmg"
 
 DEMOS_amd64="jdk-${MY_PV}-linux-x64-demos.tar.gz"
+DEMOS_arm="jdk-${MY_PV}-linux-arm-vfp-hflt-demos.tar.gz"
 DEMOS_arm="jdk-${MY_PV}-linux-arm32-vfp-hflt-demos.tar.gz"
 DEMOS_arm64="jdk-${MY_PV}-linux-arm64-vfp-hflt-demos.tar.gz"
 DEMOS_x86="jdk-${MY_PV}-linux-i586-demos.tar.gz"
-DEMOS_x64_solaris="jdk-${MY_PV}-solaris-x64-demos.tar.gz"
-DEMOS_sparc64_solaris="jdk-${MY_PV}-solaris-sparcv9-demos.tar.gz"
-DEMOS_x64_macos="jdk-${MY_PV}-macosx-x86_64-demos.zip"
 
 DESCRIPTION="Oracle's Java SE Development Kit"
 HOMEPAGE="http://www.oracle.com/technetwork/java/javase/"
-for d in "${AT_AVAILABLE[@]}"; do
-	SRC_URI+=" ${d}? ( $(eval "echo \${$(echo AT_${d/-/_})}")"
-	if has ${d} "${DEMOS_AVAILABLE[@]}"; then
-		SRC_URI+=" examples? ( $(eval "echo \${$(echo DEMOS_${d/-/_})}") )"
-	fi
-	SRC_URI+=" )"
-done
-unset d
+MIR_URI="mirror://funtoo/oracle-java"
+SRC_URI="
+	amd64? ( ${MIR_URI}/${AT_amd64} )
+	arm? ( ${MIR_URI}/${AT_arm} )
+	arm64? ( ${MIR_URI}/${AT_arm64} )
+	x86? ( ${MIR_URI}/${AT_x86} )"
 
 LICENSE="Oracle-BCLA-JavaSE examples? ( BSD )"
 SLOT="1.8"
-KEYWORDS="amd64 ~arm ~arm64 x86 ~amd64-linux ~x86-linux ~x64-macos ~sparc64-solaris ~x64-solaris"
-IUSE="alsa commercial cups derby doc examples +fontconfig headless-awt javafx jce nsplugin selinux source visualvm"
+KEYWORDS="*"
+IUSE="alsa +awt commercial cups derby doc examples +fontconfig javafx jce nsplugin pax_kernel selinux source"
 REQUIRED_USE="javafx? ( alsa fontconfig )"
 
-RESTRICT="fetch preserve-libs strip"
+RESTRICT="mirror preserve-libs strip"
 QA_PREBUILT="*"
 
-# NOTES:
-#
-# * cups is dlopened.
-#
-# * libpng is also dlopened but only by libsplashscreen, which isn't
-#   important, so we can exclude that.
-#
-# * We still need to work out the exact AWT and JavaFX dependencies
-#   under MacOS. It doesn't appear to use many, if any, of the
-#   dependencies below.
-#
 RDEPEND="!x64-macos? (
-		!headless-awt? (
+		 awt? (
 			x11-libs/libX11
 			x11-libs/libXext
 			x11-libs/libXi
@@ -101,61 +72,23 @@ RDEPEND="!x64-macos? (
 	!prefix? ( sys-libs/glibc:* )
 	selinux? ( sec-policy/selinux-java )"
 
+# A PaX header isn't created by scanelf so depend on paxctl to avoid
+# fallback marking. See bug #427642.
 DEPEND="app-arch/zip
-	examples? ( x64-macos? ( app-arch/unzip ) )"
+	examples? ( x64-macos? ( app-arch/unzip ) )
+	pax_kernel? ( sys-apps/paxctl )"
 
 S="${WORKDIR}/jdk"
 
-check_tarballs_available() {
-	local uri=$1; shift
-	local dl= unavailable=
-	for dl in "${@}" ; do
-		[[ ! -f "${DISTDIR}/${dl}" ]] && unavailable+=" ${dl}"
-	done
-
-	if [[ -n "${unavailable}" ]] ; then
-		if [[ -z ${_check_tarballs_available_once} ]] ; then
-			einfo
-			einfo "Oracle requires you to download the needed files manually after"
-			einfo "accepting their license through a javascript capable web browser."
-			einfo
-			_check_tarballs_available_once=1
-		fi
-		einfo "Download the following files:"
-		for dl in ${unavailable}; do
-			einfo "  ${dl}"
-		done
-		einfo "at '${uri}'"
-		einfo "and move them to '${DISTDIR}'"
-		einfo
-		einfo "If the above mentioned urls do not point to the correct version anymore,"
-		einfo "please download the files from Oracle's java download archive:"
-		einfo
-		einfo "   http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase8-2177648.html#jdk-${MY_PV}-oth-JPR"
-		einfo
-	fi
-}
-
-pkg_nofetch() {
-	local distfiles=( $(eval "echo \${$(echo AT_${ARCH/-/_})}") )
-	if use examples && has ${ARCH} "${DEMOS_AVAILABLE[@]}"; then
-		distfiles+=( $(eval "echo \${$(echo DEMOS_${ARCH/-/_})}") )
-	fi
-	check_tarballs_available "${JDK_URI}" "${distfiles[@]}"
-}
-
 src_unpack() {
-	if use x64-macos ; then
-		pushd "${T}" > /dev/null || die
-		mkdir dmgmount || die
-		hdiutil attach "${DISTDIR}"/jdk-${MY_PV}-macosx-x64.dmg \
-			-mountpoint "${T}"/dmgmount || die
-		printf -v update "%02d" $(get_version_component_range 4) || die
-		xar -xf dmgmount/JDK\ $(get_version_component_range 2)\ Update\ ${update}.pkg || die
-		hdiutil detach "${T}"/dmgmount || die
-		zcat jdk1${MY_PV%u*}0${update}.pkg/Payload | cpio -idv || die
-		mv Contents/Home "${WORKDIR}"/jdk${MY_PV} || die
-		popd > /dev/null || die
+	if use arm ; then
+		# Special case for ARM soft VS hard float.
+		if [[ ${CHOST} == *-hardfloat-* ]] ; then
+			unpack $AT_arm
+		#else
+			#unpack jdk-${MY_PV}-linux-arm-vfp-sflt.tar.gz
+		fi
+		use jce && unpack ${JCE_FILE}
 	else
 		default
 	fi
@@ -167,10 +100,9 @@ src_unpack() {
 }
 
 src_prepare() {
-	default
 
 	if [[ -n ${JAVA_PKG_STRICT} ]] ; then
-		# Mark this binary early to run it now.
+		# Mark this binary early to run it now
 		pax-mark m ./bin/javap
 
 		eqawarn "Ensure that this only calls trackJavaUsage(). If not, see bug #559936."
@@ -197,15 +129,14 @@ src_install() {
 	if ! use alsa ; then
 		rm -vf jre/lib/*/libjsoundalsa.* || die
 	fi
-
+	
 	if ! use commercial; then
 		rm -vfr lib/missioncontrol jre/lib/jfr* || die
 	fi
 
-	if use headless-awt ; then
-		rm -vf {,jre/}lib/*/lib*{[jx]awt,splashscreen}* \
-		   {,jre/}bin/{javaws,policytool} \
-		   bin/appletviewer || die
+	if ! use awt ; then
+		rm -vf lib/*/lib*{[jx]awt,splashscreen}* \
+		   bin/{javaws,policytool} || die
 	fi
 
 	if ! use javafx ; then
@@ -223,9 +154,9 @@ src_install() {
 	# Even though plugins linked against multiple ffmpeg versions are
 	# provided, they generally lag behind what Gentoo has available.
 	rm -vf jre/lib/*/libavplugin* || die
-
-	# Packaged as dev-util/visualvm but some users prefer this version.
-	use visualvm || find -name "*visualvm*" -exec rm -vfr {} + || die
+	
+	# We package this as dev-util/visualvm.
+	rm -vfr lib/visualvm || die
 
 	dodoc COPYRIGHT
 	dodir "${dest}"
@@ -240,8 +171,8 @@ src_install() {
 	fi
 
 	ln -s policy/$(usex jce unlimited limited)/{US_export,local}_policy.jar \
-		"${ddest}"/jre/lib/security/ || die
-
+			"${ddest}"/jre/lib/security/ || die "symlinking failed"
+	
 	if use nsplugin ; then
 		local nsplugin_link=${nsplugin##*/}
 		nsplugin_link=${nsplugin_link/./-${PN}-${SLOT}.}
@@ -309,26 +240,33 @@ src_install() {
 
 	if use x64-macos ; then
 		# Fix miscellaneous install_name issues.
-		local lib
+		pushd "${ddest}"/jre/lib > /dev/null || die
+		local lib needed nlib npath
 		for lib in decora_sse glass prism_{common,es2,sw} ; do
 			lib=lib${lib}.dylib
 			einfo "Fixing self-reference of ${lib}"
 			install_name_tool \
 				-id "${EPREFIX}${dest}/jre/lib/${lib}" \
-				"${ddest}"/jre/lib/${lib} || die
+				"${lib}"
+		done
+		popd > /dev/null
+
+		# This is still jdk1{5,6}, even on Java 8, so don't change it
+		# until you know different.
+		for nlib in jdk1{5,6} ; do
+			install_name_tool -change \
+				/usr/lib/libgcc_s_ppc64.1.dylib \
+				/usr/lib/libSystem.B.dylib \
+				"${ddest}"/lib/visualvm/profiler/lib/deployed/${nlib}/mac/libprofilerinterface.jnilib
+			install_name_tool -id \
+				"${EPREFIX}${dest}"/lib/visualvm/profiler/lib/deployed/${nlib}/mac/libprofilerinterface.jnilib \
+				"${ddest}"/lib/visualvm/profiler/lib/deployed/${nlib}/mac/libprofilerinterface.jnilib
 		done
 	fi
 
-	java-vm_install-env "${FILESDIR}"/${PN}.env.sh
+	set_java_env
 	java-vm_revdep-mask
+	java-vm_install-env "${FILESDIR}"/${PN}.env.sh
 	java-vm_sandbox-predict /dev/random /proc/self/coredump_filter
 }
 
-pkg_postinst() {
-	java-vm-2_pkg_postinst
-
-	if ! use headless-awt && ! use javafx; then
-		ewarn "You have disabled the javafx flag. Some modern desktop Java applications"
-		ewarn "require this and they may fail with a confusing error message."
-	fi
-}

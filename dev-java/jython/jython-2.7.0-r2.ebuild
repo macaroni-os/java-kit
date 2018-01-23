@@ -34,6 +34,7 @@ CP_DEPEND="dev-java/antlr:3
 	java-virtuals/script-api:0
 	java-virtuals/servlet-api:3.0"
 RDEPEND="${CP_DEPEND}
+	app-eselect/eselect-jython
 	>=virtual/jre-1.7"
 DEPEND="${CP_DEPEND}
 	>=virtual/jdk-1.7
