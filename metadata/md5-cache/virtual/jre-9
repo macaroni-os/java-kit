@@ -1,7 +1,0 @@
-DEFINED_PHASES=-
-DESCRIPTION=Virtual for Java Runtime Environment (JRE)
-EAPI=6
-KEYWORDS=~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc64-solaris ~x64-solaris
-RDEPEND=|| ( virtual/jdk:9 dev-java/oracle-jre-bin:9 )
-SLOT=9
-_md5_=88f5f9fd5eed9f3ad85b9593a3d8e839
