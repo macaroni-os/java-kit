@@ -87,6 +87,3 @@ dev-java/protobuf-java:nano - Enable code generator and runtime library designed
 dev-java/rxtx:lfd - Installs and uses LockFileServer daemon (lfd)
 dev-java/sbt:binary - Install from (Gentoo-compiled) binary instead of building from sources. Set this when you run out of memory during build.
 dev-lang/scala:binary - Install from (Gentoo-compiled) binary instead of building from sources. Set this when you run out of memory during build.
-www-servers/resin:admin - Enable Resin admin webapp
-www-servers/tomcat:extra-webapps - Build also the docs and examples webapp
-www-servers/tomcat:websockets - Builds websockets api and implementation (requires java 7)
