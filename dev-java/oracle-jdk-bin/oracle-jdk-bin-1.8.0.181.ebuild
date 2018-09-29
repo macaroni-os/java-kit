@@ -1,11 +1,8 @@
-# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI="5"
 
-inherit desktop gnome2-utils java-vm-2 prefix versionator
-
-KEYWORDS="-* amd64 ~arm ~arm64 x86 ~amd64-linux ~x86-linux ~x64-macos ~sparc64-solaris ~x64-solaris"
+inherit eutils java-vm-2 prefix versionator
 
 if [[ "$(get_version_component_range 4)" == 0 ]] ; then
 	S_PV="$(get_version_component_range 1-3)"
@@ -16,51 +13,38 @@ fi
 
 MY_PV="$(get_version_component_range 2)${MY_PV_EXT}"
 
-declare -A ARCH_FILES
-ARCH_FILES[amd64]="jdk-${MY_PV}-linux-x64.tar.gz"
-ARCH_FILES[arm]="jdk-${MY_PV}-linux-arm32-vfp-hflt.tar.gz"
-ARCH_FILES[arm64]="jdk-${MY_PV}-linux-arm64-vfp-hflt.tar.gz"
-ARCH_FILES[x86]="jdk-${MY_PV}-linux-i586.tar.gz"
-ARCH_FILES[x64-macos]="jdk-${MY_PV}-macosx-x64.dmg"
-ARCH_FILES[sparc64-solaris]="jdk-${MY_PV}-solaris-sparcv9.tar.gz"
-ARCH_FILES[x64-solaris]="jdk-${MY_PV}-solaris-x64.tar.gz"
+AT_amd64="jdk-${MY_PV}-linux-x64.tar.gz"
+AT_arm="jdk-${MY_PV}-linux-arm-vfp-hflt.tar.gz"
+AT_arm="jdk-${MY_PV}-linux-arm32-vfp-hflt.tar.gz"
+AT_arm64="jdk-${MY_PV}-linux-arm64-vfp-hflt.tar.gz"
+AT_x86="jdk-${MY_PV}-linux-i586.tar.gz"
 
-for keyword in ${KEYWORDS//-\*} ; do
-	case "${keyword#\~}" in
-		*-linux) continue ;;
-		x64-macos) demo="jdk-${MY_PV}-macosx-x86_64-demos.zip" ;;
-		*) demo=${ARCH_FILES[${keyword#\~}]/./-demos.} ;;
-	esac
-
-	SRC_URI+="
-		${keyword#\~}? (
-			${ARCH_FILES[${keyword#\~}]}
-			examples? ( ${demo} )
-		)"
-done
+DEMOS_amd64="jdk-${MY_PV}-linux-x64-demos.tar.gz"
+DEMOS_arm="jdk-${MY_PV}-linux-arm-vfp-hflt-demos.tar.gz"
+DEMOS_arm="jdk-${MY_PV}-linux-arm32-vfp-hflt-demos.tar.gz"
+DEMOS_arm64="jdk-${MY_PV}-linux-arm64-vfp-hflt-demos.tar.gz"
+DEMOS_x86="jdk-${MY_PV}-linux-i586-demos.tar.gz"
 
 DESCRIPTION="Oracle's Java SE Development Kit"
 HOMEPAGE="http://www.oracle.com/technetwork/java/javase/"
+MIR_URI="https://build.funtoo.org/distfiles/oracle-java"
+SRC_URI="
+	amd64? ( ${MIR_URI}/${AT_amd64} )
+	arm? ( ${MIR_URI}/${AT_arm} )
+	arm64? ( ${MIR_URI}/${AT_arm64} )
+	x86? ( ${MIR_URI}/${AT_x86} )"
+
 LICENSE="Oracle-BCLA-JavaSE examples? ( BSD )"
 SLOT="1.8"
-IUSE="alsa commercial cups doc examples +fontconfig headless-awt javafx jce nsplugin selinux source visualvm"
+KEYWORDS="*"
+IUSE="alsa +awt commercial cups doc examples +fontconfig javafx jce nsplugin pax_kernel selinux source"
 REQUIRED_USE="javafx? ( alsa fontconfig )"
-RESTRICT="fetch preserve-libs strip"
+
+RESTRICT="mirror preserve-libs strip"
 QA_PREBUILT="*"
 
-# NOTES:
-#
-# * cups is dlopened.
-#
-# * libpng is also dlopened but only by libsplashscreen, which isn't
-#   important, so we can exclude that.
-#
-# * We still need to work out the exact AWT and JavaFX dependencies
-#   under MacOS. It doesn't appear to use many, if any, of the
-#   dependencies below.
-#
 RDEPEND="!x64-macos? (
-		!headless-awt? (
+		 awt? (
 			x11-libs/libX11
 			x11-libs/libXext
 			x11-libs/libXi
@@ -88,51 +72,37 @@ RDEPEND="!x64-macos? (
 	!prefix? ( sys-libs/glibc:* )
 	selinux? ( sec-policy/selinux-java )"
 
+# A PaX header isn't created by scanelf so depend on paxctl to avoid
+# fallback marking. See bug #427642.
 DEPEND="app-arch/zip
-	examples? ( x64-macos? ( app-arch/unzip ) )"
+	examples? ( x64-macos? ( app-arch/unzip ) )
+	pax_kernel? ( sys-apps/paxctl )"
 
-S="${WORKDIR}/jdk$(replace_version_separator 3 _  ${S_PV})"
-
-pkg_nofetch() {
-	local a
-	einfo "Please download these files and move them to your distfiles directory:"
-	einfo
-	for a in ${A} ; do
-		[[ ! -f ${DISTDIR}/${a} ]] && einfo "  ${a}"
-	done
-	einfo
-	einfo "  http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html"
-	einfo
-	einfo "If the above mentioned URL does not point to the correct version anymore,"
-	einfo "please download the file from Oracle's Java download archive:"
-	einfo
-	einfo "  http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase8-2177648.html"
-	einfo
-}
+S="${WORKDIR}/jdk"
 
 src_unpack() {
-	if use x64-macos ; then
-		mkdir -p "${T}"/dmgmount || die
-		hdiutil attach "${DISTDIR}"/jdk-${MY_PV}-macosx-x64.dmg \
-			-mountpoint "${T}"/dmgmount || die
-		local jdkgen=$(get_version_component_range 2)
-		local uver=$(get_version_component_range 4)
-		( cd "${T}" &&
-		  xar -xf "${T}/dmgmount/JDK ${jdkgen} Update ${uver}.pkg" \
-		  jdk${PV//.}.pkg/Payload ) || die
-		zcat "${T}"/jdk${PV//.}.pkg/Payload | cpio -idv || die
-		hdiutil detach "${T}"/dmgmount || die
-		mv Contents/Home "${S}" || die
+	if use arm ; then
+		# Special case for ARM soft VS hard float.
+		if [[ ${CHOST} == *-hardfloat-* ]] ; then
+			unpack $AT_arm
+		#else
+			#unpack jdk-${MY_PV}-linux-arm-vfp-sflt.tar.gz
+		fi
+		use jce && unpack ${JCE_FILE}
+	else
+		default
 	fi
 
-	default
+	# Upstream is changing their versioning scheme every release around 1.8.0.*;
+	# to stop having to change it over and over again, just wildcard match and
+	# live a happy life instead of trying to get this new jdk1.8.0_05 to work.
+	mv "${WORKDIR}"/jdk* "${S}" || die
 }
 
 src_prepare() {
-	default
 
 	if [[ -n ${JAVA_PKG_STRICT} ]] ; then
-		# Mark this binary early to run it now.
+		# Mark this binary early to run it now
 		pax-mark m ./bin/javap
 
 		eqawarn "Ensure that this only calls trackJavaUsage(). If not, see bug #559936."
@@ -159,15 +129,14 @@ src_install() {
 	if ! use alsa ; then
 		rm -vf jre/lib/*/libjsoundalsa.* || die
 	fi
-
-	if ! use commercial ; then
+	
+	if ! use commercial; then
 		rm -vfr lib/missioncontrol jre/lib/jfr* || die
 	fi
 
-	if use headless-awt ; then
-		rm -vf {,jre/}lib/*/lib*{[jx]awt,splashscreen}* \
-		   {,jre/}bin/{javaws,policytool} \
-		   bin/appletviewer || die
+	if ! use awt ; then
+		rm -vf lib/*/lib*{[jx]awt,splashscreen}* \
+		   bin/{javaws,policytool} || die
 	fi
 
 	if ! use javafx ; then
@@ -188,40 +157,26 @@ src_install() {
 	# Even though plugins linked against multiple ffmpeg versions are
 	# provided, they generally lag behind what Gentoo has available.
 	rm -vf jre/lib/*/libavplugin* || die
-
-	# Prune all fontconfig files so that libfontconfig will be used.
-	rm -v jre/lib/fontconfig.* || die
-
-	# Packaged as dev-util/visualvm but some users prefer this version.
-	use visualvm || find -name "*visualvm*" -exec rm -vfr {} + || die
-
-	# Install desktop file for the Java Control Panel. Using
-	# ${PN}-${SLOT} to prevent file collision with JRE and other slots.
-	if [[ -d jre/lib/desktop/icons ]] ; then
-		local icon
-		pushd jre/lib/desktop/icons >/dev/null || die
-		for icon in */*/apps/sun-jcontrol.png ; do
-			insinto /usr/share/icons/"${icon%/*}"
-			newins "${icon}" sun-jcontrol-${PN}-${SLOT}.png
-		done
-		popd >/dev/null || die
-		make_desktop_entry \
-			"${dest}"/bin/jcontrol \
-			"Java Control Panel for Oracle JDK ${SLOT}" \
-			sun-jcontrol-${PN}-${SLOT} \
-			"Settings;Java;"
-	fi
+	
+	# We package this as dev-util/visualvm.
+	rm -vfr lib/visualvm || die
 
 	dodoc COPYRIGHT
 	dodir "${dest}"
 	cp -pPR bin include jre lib man "${ddest}" || die
 
-	if use examples && [[ ${A} = *-demos.* ]] ; then
+	if use examples && has ${ARCH} "${DEMOS_AVAILABLE[@]}" ; then
 		cp -pPR demo sample "${ddest}" || die
 	fi
 
 	ln -s policy/$(usex jce unlimited limited)/{US_export,local}_policy.jar \
-		"${ddest}"/jre/lib/security/ || die
+			"${ddest}"/jre/lib/security/ || die "symlinking failed"
+	
+	if use nsplugin ; then
+		local nsplugin_link=${nsplugin##*/}
+		nsplugin_link=${nsplugin_link/./-${PN}-${SLOT}.}
+		dosym "${dest}/${nsplugin}" "/usr/$(get_libdir)/nsbrowser/plugins/${nsplugin_link}"
+	fi
 
 	if use source ; then
 		cp -v src.zip "${ddest}" || die
@@ -231,17 +186,38 @@ src_install() {
 		fi
 	fi
 
-	# Only install Gentoo-specific fontconfig if flag is disabled.
-	# https://docs.oracle.com/javase/8/docs/technotes/guides/intl/fontconfig.html
-	if ! use fontconfig ; then
-		insinto "${dest}"/jre/lib/
-		doins "$(prefixify_ro "${FILESDIR}"/fontconfig.properties)"
+	if [[ -d jre/lib/desktop ]] ; then
+		# Install desktop file for the Java Control Panel.
+		# Using ${PN}-${SLOT} to prevent file collision with jre and or
+		# other slots.  make_desktop_entry can't be used as ${P} would
+		# end up in filename.
+		newicon jre/lib/desktop/icons/hicolor/48x48/apps/sun-jcontrol.png \
+			sun-jcontrol-${PN}-${SLOT}.png || die
+		sed -e "s#Name=.*#Name=Java Control Panel for Oracle JDK ${SLOT}#" \
+			-e "s#Exec=.*#Exec=/opt/${P}/jre/bin/jcontrol#" \
+			-e "s#Icon=.*#Icon=sun-jcontrol-${PN}-${SLOT}#" \
+			-e "s#Application;##" \
+			-e "/Encoding/d" \
+			jre/lib/desktop/applications/sun_java.desktop \
+			> "${T}"/jcontrol-${PN}-${SLOT}.desktop || die
+		domenu "${T}"/jcontrol-${PN}-${SLOT}.desktop
 	fi
 
-	# Needs to be done before CDS, bug #215225.
+	# Prune all fontconfig files so libfontconfig will be used and only install
+	# a Gentoo specific one if fontconfig is disabled.
+	# http://docs.oracle.com/javase/8/docs/technotes/guides/intl/fontconfig.html
+	rm "${ddest}"/jre/lib/fontconfig.* || die
+	if ! use fontconfig ; then
+		cp "${FILESDIR}"/fontconfig.Gentoo.properties "${T}"/fontconfig.properties || die
+		eprefixify "${T}"/fontconfig.properties
+		insinto "${dest}"/jre/lib/
+		doins "${T}"/fontconfig.properties
+	fi
+
+	# This needs to be done before CDS - #215225
 	java-vm_set-pax-markings "${ddest}"
 
-	# See bug #207282.
+	# see bug #207282
 	einfo "Creating the Class Data Sharing archives"
 	case ${ARCH} in
 		arm|ia64)
@@ -262,36 +238,34 @@ src_install() {
 	find "${D}" -type d -empty -exec rmdir -v {} + || die
 
 	if use x64-macos ; then
-		local lib
-		for lib in lib{decora_sse,glass,prism_{common,es2,sw}}.dylib ; do
-			ebegin "Fixing self-reference of ${lib}"
+		# Fix miscellaneous install_name issues.
+		pushd "${ddest}"/jre/lib > /dev/null || die
+		local lib needed nlib npath
+		for lib in decora_sse glass prism_{common,es2,sw} ; do
+			lib=lib${lib}.dylib
+			einfo "Fixing self-reference of ${lib}"
 			install_name_tool \
-				-id "${EPREFIX}${dest}"/jre/lib/${lib} \
-				"${ddest}"/jre/lib/${lib} || die
-			eend $?
+				-id "${EPREFIX}${dest}/jre/lib/${lib}" \
+				"${lib}"
+		done
+		popd > /dev/null
+
+		# This is still jdk1{5,6}, even on Java 8, so don't change it
+		# until you know different.
+		for nlib in jdk1{5,6} ; do
+			install_name_tool -change \
+				/usr/lib/libgcc_s_ppc64.1.dylib \
+				/usr/lib/libSystem.B.dylib \
+				"${ddest}"/lib/visualvm/profiler/lib/deployed/${nlib}/mac/libprofilerinterface.jnilib
+			install_name_tool -id \
+				"${EPREFIX}${dest}"/lib/visualvm/profiler/lib/deployed/${nlib}/mac/libprofilerinterface.jnilib \
+				"${ddest}"/lib/visualvm/profiler/lib/deployed/${nlib}/mac/libprofilerinterface.jnilib
 		done
 	fi
 
-	java-vm_install-env "${FILESDIR}"/${PN}.env.sh
+	set_java_env
 	java-vm_revdep-mask
+	java-vm_install-env "${FILESDIR}"/${PN}.env.sh
 	java-vm_sandbox-predict /dev/random /proc/self/coredump_filter
 }
 
-pkg_preinst() {
-	gnome2_icon_savelist
-}
-
-pkg_postinst() {
-	gnome2_icon_cache_update
-	java-vm-2_pkg_postinst
-
-	if ! use headless-awt && ! use javafx ; then
-		ewarn "You have disabled the javafx flag. Some modern desktop Java applications"
-		ewarn "require this and they may fail with a confusing error message."
-	fi
-}
-
-pkg_postrm() {
-	gnome2_icon_cache_update
-	java-vm-2_pkg_postrm
-}
