@@ -1,4 +1,3 @@
-# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="6"
@@ -15,7 +14,7 @@ LICENSE="Apache-2.0"
 SLOT="${PV}"
 KEYWORDS="~x86 ~amd64"
 
-DEPEND="app-arch/zip"
+DEPEND="app-arch/zip app-eselect/eselect-gradle"
 RDEPEND=">=virtual/jdk-1.6"
 
 IUSE="source doc examples"
@@ -47,5 +46,13 @@ src_install() {
 	insinto "${gradle_dir}"
 	doins -r bin/ lib/
 	fperms 755 "${gradle_dir}/bin/gradle"
-	dosym "${gradle_dir}/bin/gradle" "/usr/bin/${MY_PN}"
+	dosym "${gradle_dir}/bin/gradle" "/usr/bin/${MY_PN}-${SLOT}"
+}
+
+pkg_postinst() {
+	eselect gradle update ifunset
+}
+
+pkg_postrm() {
+	eselect gradle update ifunset
 }
