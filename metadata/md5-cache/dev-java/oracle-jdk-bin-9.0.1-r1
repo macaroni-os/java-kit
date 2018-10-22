@@ -1,15 +1,15 @@
 DEFINED_PHASES=install postinst postrm prepare prerm setup unpack
-DEPEND=app-arch/zip >=dev-java/java-config-2.2.0-r3 >=app-eselect/eselect-java-0.4.0
+DEPEND=app-arch/zip >=dev-java/java-config-2.2.0-r3 >=app-eselect/eselect-java-0.2.0
 DESCRIPTION=Oracle's Java SE Development Kit
 EAPI=6
 HOMEPAGE=http://jdk.java.net/9/
 IUSE=alsa commercial cups doc examples +fontconfig headless-awt javafx nsplugin selinux source
 KEYWORDS=amd64
 LICENSE=Oracle-BCLA-JavaSE
-RDEPEND=!x64-macos? ( !headless-awt? ( x11-libs/libX11 x11-libs/libXext x11-libs/libXi x11-libs/libXrender x11-libs/libXtst ) javafx? ( dev-libs/glib:2 dev-libs/libxml2:2 dev-libs/libxslt media-libs/freetype:2 x11-libs/cairo x11-libs/gtk+:2 x11-libs/libX11 x11-libs/libXtst x11-libs/libXxf86vm x11-libs/pango virtual/opengl ) ) alsa? ( media-libs/alsa-lib ) cups? ( net-print/cups ) doc? ( dev-java/java-sdk-docs:9 ) fontconfig? ( media-libs/fontconfig:1.0 ) !prefix? ( sys-libs/glibc:* ) selinux? ( sec-policy/selinux-java ) >=dev-java/java-config-2.2.0-r3 >=app-eselect/eselect-java-0.4.0
+RDEPEND=!x64-macos? ( !headless-awt? ( x11-libs/libX11 x11-libs/libXext x11-libs/libXi x11-libs/libXrender x11-libs/libXtst ) javafx? ( dev-libs/glib:2 dev-libs/libxml2:2 dev-libs/libxslt media-libs/freetype:2 x11-libs/cairo x11-libs/gtk+:2 x11-libs/libX11 x11-libs/libXtst x11-libs/libXxf86vm x11-libs/pango virtual/opengl ) ) alsa? ( media-libs/alsa-lib ) cups? ( net-print/cups ) doc? ( dev-java/java-sdk-docs:9 ) fontconfig? ( media-libs/fontconfig:1.0 ) !prefix? ( sys-libs/glibc:* ) selinux? ( sec-policy/selinux-java ) >=dev-java/java-config-2.2.0-r3 >=app-eselect/eselect-java-0.2.0
 REQUIRED_USE=javafx? ( alsa fontconfig )
 RESTRICT=mirror preserve-libs strip
 SLOT=9
 SRC_URI=amd64? ( mirror://funtoo/oracle-java/jdk-9.0.1_linux-x64_bin.tar.gz )
-_eclasses_=epatch	8233751dc5105a6ae8fcd86ce2bb0247	epunt-cxx	f8073339d152f56626493f43d8ba4691	estack	5ac2a138d0b33354b764d84f9e835db8	eutils	1fb064d93b3ffd05c2fb19ef430a4aa1	java-vm-2	8e35974e63a8fdd757a751760871e3db	ltprune	2770eed66a9b8ef944714cd0e968182e	multilib	97f470f374f2e94ccab04a2fb21d811e	pax-utils	e85f015e815dd463b0c206d781ef45a5	prefix	e51c7882b7b721e54e684f7eb143cbfe	toolchain-funcs	6eb35f81556258a4bc9182ad3dfd58ee	versionator	2352c3fc97241f6a02042773c8287748	xdg-utils	93b2dfbb00a09161e1e7f6360c0f7f6b
+_eclasses_=epatch	8233751dc5105a6ae8fcd86ce2bb0247	epunt-cxx	f8073339d152f56626493f43d8ba4691	estack	5ac2a138d0b33354b764d84f9e835db8	eutils	1fb064d93b3ffd05c2fb19ef430a4aa1	fdo-mime	995b19d3f30e956b4e1bc5a91fdc4ea7	java-vm-2	f044536c6b1c03132a1f1d54c194129b	ltprune	2770eed66a9b8ef944714cd0e968182e	multilib	97f470f374f2e94ccab04a2fb21d811e	pax-utils	4f95120230a315c8caaabeb2307b7eee	prefix	e51c7882b7b721e54e684f7eb143cbfe	toolchain-funcs	6eb35f81556258a4bc9182ad3dfd58ee	versionator	c80ccf29e90adea7c5cae94b42eb76d0
 _md5_=7d7e931d0a464fbabfc4b2d8c7518a09
