@@ -1,8 +1,11 @@
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
+EAPI=6
 
-inherit java-vm-2 eutils prefix versionator
+inherit desktop gnome2-utils java-vm-2 prefix versionator
+
+KEYWORDS="-* amd64 x86"
 
 if [[ "$(get_version_component_range 4)" == 0 ]] ; then
 	S_PV="$(get_version_component_range 1-3)"
@@ -13,29 +16,35 @@ fi
 
 MY_PV="$(get_version_component_range 2)${MY_PV_EXT}"
 
-X86_AT="jre-${MY_PV}-linux-i586.tar.gz"
-AMD64_AT="jre-${MY_PV}-linux-x64.tar.gz"
+declare -A ARCH_FILES
+ARCH_FILES[amd64]="jre-${MY_PV}-linux-x64.tar.gz"
+ARCH_FILES[x86]="jre-${MY_PV}-linux-i586.tar.gz"
 
-JCE_DIR="UnlimitedJCEPolicyJDK8"
-JCE_FILE="${JCE_DIR}.zip"
+for keyword in ${KEYWORDS//-\*} ; do
+	SRC_URI+=" ${keyword#\~}? ( ${ARCH_FILES[${keyword#\~}]} )"
+done
 
 DESCRIPTION="Oracle's Java SE Runtime Environment"
 HOMEPAGE="http://www.oracle.com/technetwork/java/javase/"
-SRC_URI="
-	x86? ( https://fastpull-us.funtoo.org/distfiles/${X86_AT} )
-	amd64? ( https://fastpull-us.funtoo.org/distfiles/${AMD64_AT} )
-	jce? ( https://fastpull-us.funtoo.org/distfiles/${JCE_FILE} )"
-
 LICENSE="Oracle-BCLA-JavaSE"
 SLOT="1.8"
-KEYWORDS="*"
-IUSE="alsa +awt commercial cups +fontconfig javafx jce nsplugin selinux"
-
-RESTRICT="mirror preserve-libs strip"
+IUSE="alsa commercial cups +fontconfig headless-awt javafx jce nsplugin selinux"
+RESTRICT="fetch preserve-libs strip"
 QA_PREBUILT="*"
 
+# NOTES:
+#
+# * cups is dlopened.
+#
+# * libpng is also dlopened but only by libsplashscreen, which isn't
+#   important, so we can exclude that.
+#
+# * We still need to work out the exact AWT and JavaFX dependencies
+#   under MacOS. It doesn't appear to use many, if any, of the
+#   dependencies below.
+#
 RDEPEND="!x64-macos? (
-		 awt? (
+		!headless-awt? (
 			x11-libs/libX11
 			x11-libs/libXext
 			x11-libs/libXi
@@ -62,26 +71,25 @@ RDEPEND="!x64-macos? (
 	!prefix? ( sys-libs/glibc:* )
 	selinux? ( sec-policy/selinux-java )"
 
-# A PaX header isn't created by scanelf so depend on paxctl to avoid
-# fallback marking. See bug #427642.
-DEPEND="app-arch/zip
-	jce? ( app-arch/unzip )"
+DEPEND="app-arch/zip"
 
-S="${WORKDIR}/jre"
+S="${WORKDIR}/jre$(replace_version_separator 3 _  ${S_PV})"
 
-src_unpack() {
-	default
-
-	# Upstream is changing their versioning scheme every release around 1.8.0.*;
-	# to stop having to change it over and over again, just wildcard match and
-	# live a happy life instead of trying to get this new jre1.8.0_05 to work.
-	mv "${WORKDIR}"/jre* "${S}" || die
+pkg_nofetch() {
+	einfo "Please download ${ARCH_FILES[${ARCH}]} and move it to"
+	einfo "your distfiles directory:"
+	einfo
+	einfo "  http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html"
+	einfo
+	einfo "If the above mentioned URL does not point to the correct version anymore,"
+	einfo "please download the file from Oracle's Java download archive:"
+	einfo
+	einfo "  http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase8-2177648.html"
+	einfo
 }
 
 src_prepare() {
-	if use jce; then
-		mv "${WORKDIR}"/${JCE_DIR} lib/security/ || die
-	fi
+	default
 
 	# Remove the hook that calls Oracle's evil usage tracker. Not just
 	# because it's evil but because it breaks the sandbox during builds
@@ -102,15 +110,15 @@ src_install() {
 	if ! use alsa ; then
 		rm -vf lib/*/libjsoundalsa.* || die
 	fi
-	
-	if ! use awt ; then
+
+	if ! use commercial ; then
+		rm -vfr lib/jfr* || die
+	fi
+
+	if use headless-awt ; then
 		rm -vf lib/*/lib*{[jx]awt,splashscreen}* \
 		   bin/{javaws,policytool} || die
 	fi
-	
-	if ! use commercial; then
-		rm -vfr lib/jfr* || die
-	fi	
 
 	if ! use javafx ; then
 		rm -vf lib/*/lib*{decora,fx,glass,prism}* \
@@ -121,63 +129,53 @@ src_install() {
 		rm -vf lib/*/libnpjp2.* || die
 	else
 		local nsplugin=$(echo lib/*/libnpjp2.*)
+		local nsplugin_link=${nsplugin##*/}
+		nsplugin_link=${nsplugin_link/./-${PN}-${SLOT}.}
+		dosym "${dest}/${nsplugin}" "/usr/$(get_libdir)/nsbrowser/plugins/${nsplugin_link}"
 	fi
 
 	# Even though plugins linked against multiple ffmpeg versions are
 	# provided, they generally lag behind what Gentoo has available.
 	rm -vf lib/*/libavplugin* || die
 
+	# Prune all fontconfig files so that libfontconfig will be used.
+	rm -v lib/fontconfig.* || die
+
+	# Install desktop file for the Java Control Panel. Using
+	# ${PN}-${SLOT} to prevent file collision with JDK and other slots.
+	if [[ -d lib/desktop/icons ]] ; then
+		local icon
+		pushd lib/desktop/icons >/dev/null || die
+		for icon in */*/apps/sun-jcontrol.png ; do
+			insinto /usr/share/icons/"${icon%/*}"
+			newins "${icon}" sun-jcontrol-${PN}-${SLOT}.png
+		done
+		popd >/dev/null || die
+		make_desktop_entry \
+			"${dest}"/bin/jcontrol \
+			"Java Control Panel for Oracle JRE ${SLOT}" \
+			sun-jcontrol-${PN}-${SLOT} \
+			"Settings;Java;"
+	fi
+
 	dodoc COPYRIGHT
 	dodir "${dest}"
 	cp -pPR	bin lib man "${ddest}" || die
 
-	if use jce ; then
-		dodir ${dest}/lib/security/strong-jce
-		mv "${ddest}"/lib/security/policy/unlimited/US_export_policy.jar \
-			"${ddest}"/lib/security/strong-jce || die
-		mv "${ddest}"/lib/security/policy/unlimited/local_policy.jar \
-			"${ddest}"/lib/security/strong-jce || die
-		dosym "${dest}"/lib/security/${JCE_DIR}/US_export_policy.jar \
-			"${dest}"/lib/security/US_export_policy.jar
-		dosym "${dest}"/lib/security/${JCE_DIR}/local_policy.jar \
-			"${dest}"/lib/security/local_policy.jar
-	fi
+	ln -s policy/$(usex jce unlimited limited)/{US_export,local}_policy.jar \
+		"${ddest}"/lib/security/ || die
 
-	if use nsplugin ; then
-		local nsplugin_link=${nsplugin##*/}
-		nsplugin_link=${nsplugin_link/./-${PN}-${SLOT}.}
-		dosym "${dest}/${nsplugin}" "/usr/$(get_libdir)/nsbrowser/plugins/${nsplugin_link}"
-	fi
-
-	# Install desktop file for the Java Control Panel.
-	# Using ${PN}-${SLOT} to prevent file collision with jre and or other slots.
-	# make_desktop_entry can't be used as ${P} would end up in filename.
-	newicon lib/desktop/icons/hicolor/48x48/apps/sun-jcontrol.png \
-		sun-jcontrol-${PN}-${SLOT}.png || die
-	sed -e "s#Name=.*#Name=Java Control Panel for Oracle JRE ${SLOT}#" \
-		-e "s#Exec=.*#Exec=/opt/${P}/bin/jcontrol#" \
-		-e "s#Icon=.*#Icon=sun-jcontrol-${PN}-${SLOT}#" \
-		-e "s#Application;##" \
-		-e "/Encoding/d" \
-		lib/desktop/applications/sun_java.desktop > \
-		"${T}"/jcontrol-${PN}-${SLOT}.desktop || die
-	domenu "${T}"/jcontrol-${PN}-${SLOT}.desktop
-
-	# Prune all fontconfig files so libfontconfig will be used and only install
-	# a Gentoo specific one if fontconfig is disabled.
-	# http://docs.oracle.com/javase/8/docs/technotes/guides/intl/fontconfig.html
-	rm "${ddest}"/lib/fontconfig.* || die
+	# Only install Gentoo-specific fontconfig if flag is disabled.
+	# https://docs.oracle.com/javase/8/docs/technotes/guides/intl/fontconfig.html
 	if ! use fontconfig ; then
-		cp "${FILESDIR}"/fontconfig.Gentoo.properties "${T}"/fontconfig.properties || die
-		eprefixify "${T}"/fontconfig.properties
 		insinto "${dest}"/lib/
-		doins "${T}"/fontconfig.properties
+		doins "$(prefixify_ro "${FILESDIR}"/fontconfig.properties)"
 	fi
 
-	# This needs to be done before CDS - #215225
+	# Needs to be done before CDS, bug #215225.
 	java-vm_set-pax-markings "${ddest}"
 
-	# see bug #207282
+	# See bug #207282.
 	einfo "Creating the Class Data Sharing archives"
 	case ${ARCH} in
 		arm|ia64)
@@ -197,8 +195,26 @@ src_install() {
 	# Remove empty dirs we might have copied.
 	find "${D}" -type d -empty -exec rmdir -v {} + || die
 
-	set_java_env
 	java-vm_install-env "${FILESDIR}"/${PN}.env.sh
 	java-vm_revdep-mask
 	java-vm_sandbox-predict /dev/random /proc/self/coredump_filter
+}
+
+pkg_preinst() {
+	gnome2_icon_savelist
+}
+
+pkg_postinst() {
+	gnome2_icon_cache_update
+	java-vm-2_pkg_postinst
+
+	if ! use headless-awt && ! use javafx ; then
+		ewarn "You have disabled the javafx flag. Some modern desktop Java applications"
+		ewarn "require this and they may fail with a confusing error message."
+	fi
+}
+
+pkg_postrm() {
+	gnome2_icon_cache_update
+	java-vm-2_pkg_postrm
 }

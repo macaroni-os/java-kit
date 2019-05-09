@@ -12,10 +12,14 @@ dev-java/ant:javamail - Enable JavaMail Ant task
 dev-java/ant:jdepend - Enable Jdepend Ant tasks
 dev-java/ant:jmf - Enable JMF (Java Media Framework) Ant tasks
 dev-java/ant:jsch - Disable Jsch (ssh, scp and related) Ant tasks
+dev-java/ant:junit - Enable JUnit Ant tasks
+dev-java/ant:junit4 - Enable JUnit4 Ant tasks
+dev-java/ant:junitlauncher - Enable JUnit5 Ant tasks
 dev-java/ant:log4j - Enable Apache log4j Ant tasks
 dev-java/ant:oro - Enable Apache Oro Ant tasks
 dev-java/ant:regexp - Enable Apache Regexp Ant tasks
 dev-java/ant:resolver - Enable Apache Resolver Ant tasks
+dev-java/ant:swing - Enable Swing Ant tasks
 dev-java/ant:testutil - Enable optional test util classes
 dev-java/commons-collections:test-framework - Install the test framework
 dev-java/commons-logging:avalon-framework - Add optional support for avalon-framework
@@ -56,7 +60,6 @@ dev-java/icedtea-web:nsplugin - Enable the browser plugin (NPPlugin).
 dev-java/icedtea-web:tagsoup - Depend on dev-java/tagsoup which allows parsing malformed .jnlp files
 dev-java/itext:rtf - Build and provide libraries for rich text format
 dev-java/itext:rups - Build and provide GUI for Reading/Updating PDF Syntax
-dev-java/jcs:admin - Enable JCS Admin servlets
 dev-java/jdbc-mysql:c3p0 - Enable c3p0 support
 dev-java/jdbc-mysql:log4j - Enable log4 support
 dev-java/jfreesvg:debug - Enable debugging during compilation.
@@ -71,16 +74,25 @@ dev-java/openjdk:gentoo-vm - Allow this JDK to be recognised by Gentoo (package 
 dev-java/openjdk:headless-awt - Don't install the X backend for AWT, needed by some GUIs
 dev-java/openjdk:jbootstrap - Build OpenJDK twice, the second time using the result of the first
 dev-java/openjdk:source - Install JVM sources
+dev-java/openjdk:systemtap - Enable SystemTAP/DTrace tracing
 dev-java/openjdk:webstart - Provide javaws command through symlink to icedtea-web
 dev-java/openjdk-bin:gentoo-vm - Allow this JDK to be recognised by Gentoo (package manager, eselect, java-config, EXPERIMENTAL!)
 dev-java/openjdk-bin:headless-awt - Don't install the X backend for AWT, needed by some GUIs (used to be X flag)
 dev-java/openjdk-bin:source - Install JVM sources
 dev-java/openjdk-bin:webstart - Provide javaws command through symlink to icedtea-web
-dev-java/oracle-jdk-bin:derby - Enable Installation of Bundled Derby (Java DB)
-dev-java/oracle-jdk-bin:jce - Enable Java Cryptographic Extension Unlimited Strength Policy files
-dev-java/oracle-jdk-bin:pax_kernel - Use paxctl to mark the JVM binaries.
-dev-java/oracle-jre-bin:jce - Enable Java Cryptographic Extension Unlimited Strength Policy files
-dev-java/oracle-jre-bin:pax_kernel - Use paxctl to mark the JVM binaries.
+dev-java/oracle-jdk-bin:commercial - Install features requiring a commercial license for production use
+dev-java/oracle-jdk-bin:gentoo-vm - Allow this JDK to be recognised by Gentoo (package manager, eselect, java-config, EXPERIMENTAL!)
+dev-java/oracle-jdk-bin:gtk2 - Enable GTK+ 2 support in JavaFX
+dev-java/oracle-jdk-bin:gtk3 - Enable GTK+ 3 support in JavaFX
+dev-java/oracle-jdk-bin:headless-awt - Don't install the X backend for AWT, needed by some GUIs (used to be X flag)
+dev-java/oracle-jdk-bin:javafx - Install JavaFX libraries
+dev-java/oracle-jdk-bin:jce - Install Java Cryptographic Extension Unlimited Strength Jurisdiction Policy Files
+dev-java/oracle-jdk-bin:source - Install JVM (and optionally JavaFX) sources
+dev-java/oracle-jdk-bin:visualvm - Install VisualVM debugging tool
+dev-java/oracle-jre-bin:commercial - Install features requiring a commercial license for production use
+dev-java/oracle-jre-bin:headless-awt - Don't install the X backend for AWT, needed by some GUIs (used to be X flag)
+dev-java/oracle-jre-bin:javafx - Install JavaFX libraries
+dev-java/oracle-jre-bin:jce - Install Java Cryptographic Extension Unlimited Strength Jurisdiction Policy Files
 dev-java/proguard:ant - Ant task for using ProGuard in build.xml scripts
 dev-java/protobuf-java:nano - Enable code generator and runtime library designed specifically for resource-constrained systems, like Android
 dev-java/rxtx:lfd - Installs and uses LockFileServer daemon (lfd)
