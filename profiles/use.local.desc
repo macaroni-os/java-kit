@@ -21,6 +21,7 @@ dev-java/ant:regexp - Enable Apache Regexp Ant tasks
 dev-java/ant:resolver - Enable Apache Resolver Ant tasks
 dev-java/ant:swing - Enable Swing Ant tasks
 dev-java/ant:testutil - Enable optional test util classes
+dev-java/ant:xz - Enable XZ Ant tasks
 dev-java/commons-collections:test-framework - Install the test framework
 dev-java/commons-logging:avalon-framework - Add optional support for avalon-framework
 dev-java/commons-logging:avalon-logkit - Add optional support for avalon-logkit
@@ -80,6 +81,9 @@ dev-java/openjdk-bin:gentoo-vm - Allow this JDK to be recognised by Gentoo (pack
 dev-java/openjdk-bin:headless-awt - Don't install the X backend for AWT, needed by some GUIs (used to be X flag)
 dev-java/openjdk-bin:source - Install JVM sources
 dev-java/openjdk-bin:webstart - Provide javaws command through symlink to icedtea-web
+dev-java/openjdk-jre-bin:gentoo-vm - Allow this JDK to be recognised by Gentoo (package manager, eselect, java-config, EXPERIMENTAL!)
+dev-java/openjdk-jre-bin:headless-awt - Don't install the X backend for AWT, needed by some GUIs (used to be X flag)
+dev-java/openjdk-jre-bin:webstart - Provide javaws command through symlink to icedtea-web
 dev-java/oracle-jdk-bin:commercial - Install features requiring a commercial license for production use
 dev-java/oracle-jdk-bin:gentoo-vm - Allow this JDK to be recognised by Gentoo (package manager, eselect, java-config, EXPERIMENTAL!)
 dev-java/oracle-jdk-bin:gtk2 - Enable GTK+ 2 support in JavaFX
@@ -94,7 +98,6 @@ dev-java/oracle-jre-bin:headless-awt - Don't install the X backend for AWT, need
 dev-java/oracle-jre-bin:javafx - Install JavaFX libraries
 dev-java/oracle-jre-bin:jce - Install Java Cryptographic Extension Unlimited Strength Jurisdiction Policy Files
 dev-java/proguard:ant - Ant task for using ProGuard in build.xml scripts
-dev-java/protobuf-java:nano - Enable code generator and runtime library designed specifically for resource-constrained systems, like Android
 dev-java/rxtx:lfd - Installs and uses LockFileServer daemon (lfd)
 dev-java/sbt:binary - Install from (Gentoo-compiled) binary instead of building from sources. Set this when you run out of memory during build.
 dev-lang/scala:binary - Install from (Gentoo-compiled) binary instead of building from sources. Set this when you run out of memory during build.
