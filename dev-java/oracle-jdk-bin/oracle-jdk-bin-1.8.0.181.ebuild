@@ -27,7 +27,7 @@ DEMOS_x86="jdk-${MY_PV}-linux-i586-demos.tar.gz"
 
 DESCRIPTION="Oracle's Java SE Development Kit"
 HOMEPAGE="http://www.oracle.com/technetwork/java/javase/"
-MIR_URI="https://fastpull-us.funtoo.org/distfiles"
+MIR_URI="https://build.funtoo.org/distfiles/oracle-java"
 SRC_URI="
 	amd64? ( ${MIR_URI}/${AT_amd64} )
 	arm? ( ${MIR_URI}/${AT_arm} )

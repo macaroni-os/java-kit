@@ -22,9 +22,9 @@ JCE_FILE="${JCE_DIR}.zip"
 DESCRIPTION="Oracle's Java SE Runtime Environment"
 HOMEPAGE="http://www.oracle.com/technetwork/java/javase/"
 SRC_URI="
-	x86? ( https://fastpull-us.funtoo.org/distfiles/${X86_AT} )
-	amd64? ( https://fastpull-us.funtoo.org/distfiles/${AMD64_AT} )
-	jce? ( https://fastpull-us.funtoo.org/distfiles/${JCE_FILE} )"
+	x86? ( https://build.funtoo.org/distfiles/oracle-java/${X86_AT} )
+	amd64? ( https://build.funtoo.org/distfiles/oracle-java/${AMD64_AT} )
+	jce? ( https://build.funtoo.org/distfiles/oracle-java/${JCE_FILE} )"
 
 LICENSE="Oracle-BCLA-JavaSE"
 SLOT="1.8"
