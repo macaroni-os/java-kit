@@ -11,4 +11,6 @@ RDEPEND="|| (
 		dev-java/oracle-jdk-bin:1.8
 		dev-java/icedtea-bin:8
 		dev-java/icedtea:8
+		dev-java/openjdk-bin:8[gentoo-vm(+)]
+		dev-java/openjdk:8[gentoo-vm(+)]
 	)"

@@ -8,7 +8,7 @@ SLOT="${PV}"
 KEYWORDS="~amd64 ~arm64 ~ppc64"
 
 RDEPEND="|| (
+		dev-java/oracle-jdk-bin:${SLOT}[gentoo-vm(+)]
 		dev-java/openjdk-bin:${SLOT}[gentoo-vm(+)]
 		dev-java/openjdk:${SLOT}[gentoo-vm(+)]
-		dev-java/oracle-jdk-bin:${SLOT}[gentoo-vm(+)]
 	)"
