@@ -1,4 +1,3 @@
-# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -21,9 +20,9 @@ SRC_URI="
 "
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 
-IUSE="alsa cups +gentoo-vm headless-awt nsplugin selinux +webstart"
+IUSE="alsa cups headless-awt selinux"
 
 RDEPEND="
 	media-libs/fontconfig:1.0
@@ -42,10 +41,6 @@ RDEPEND="
 		x11-libs/libXrender
 		x11-libs/libXtst
 	)"
-
-PDEPEND="
-	webstart? ( >=dev-java/icedtea-web-1.6.1:0 )
-	nsplugin? ( >=dev-java/icedtea-web-1.6.1:0[nsplugin] )"
 
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
@@ -70,30 +65,15 @@ src_install() {
 			bin/policytool || die
 	fi
 
-	mv lib/security/cacerts lib/security/cacerts.orig || die
+	rm -v lib/security/cacerts || die
+	dosym ../../../../../etc/ssl/certs/java/cacerts \
+		"${dest}"/lib/security/cacerts
 
 	dodir "${dest}"
 	cp -pPR * "${ddest}" || die
 
-	dosym "${EPREFIX}"/etc/ssl/certs/java/cacerts "${dest}"/lib/security/cacerts
-
-	use gentoo-vm && java-vm_install-env "${FILESDIR}"/${PN}-${SLOT}.env.sh
+	java-vm_install-env "${FILESDIR}"/${PN}-${SLOT}.env.sh
 	java-vm_set-pax-markings "${ddest}"
 	java-vm_revdep-mask
 	java-vm_sandbox-predict /dev/random /proc/self/coredump_filter
-}
-
-pkg_postinst() {
-	java-vm-2_pkg_postinst
-
-	if use gentoo-vm ; then
-		ewarn "WARNING! You have enabled the gentoo-vm USE flag, making this JRE"
-		ewarn "recognised by the system. This will almost certainly break things."
-	else
-		ewarn "The experimental gentoo-vm USE flag has not been enabled so this JRE"
-		ewarn "will not be recognised by the system. For example, simply calling"
-		ewarn "\"java\" will launch a different JVM. This is necessary until Gentoo"
-		ewarn "fully supports OpenJDK 8. This JRE must therefore be invoked using its"
-		ewarn "absolute location under ${EPREFIX}/opt/${P}."
-	fi
 }

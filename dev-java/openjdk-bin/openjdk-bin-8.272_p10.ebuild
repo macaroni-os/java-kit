@@ -1,4 +1,3 @@
-# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -18,21 +17,25 @@ DESCRIPTION="Prebuilt Java JDK binaries provided by AdoptOpenJDK"
 HOMEPAGE="https://adoptopenjdk.net"
 SRC_URI="
 	$(abi_uri aarch64 arm64)
+	$(abi_uri arm)
+	$(abi_uri ppc64le ppc64)
+	$(abi_uri x64 amd64)
 "
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="~arm64"
+KEYWORDS="amd64 ~arm arm64 ppc64"
 
-IUSE="alsa cups doc examples +gentoo-vm headless-awt nsplugin selinux source +webstart"
+IUSE="alsa cups examples headless-awt selinux source"
 
 RDEPEND="
 	media-libs/fontconfig:1.0
 	media-libs/freetype:2
+	>=sys-apps/baselayout-java-0.1.0-r1
 	>=sys-libs/glibc-2.2.5:*
 	sys-libs/zlib
 	alsa? ( media-libs/alsa-lib )
+	arm? ( dev-libs/libffi-compat:6 )
 	cups? ( net-print/cups )
-	doc? ( dev-java/java-sdk-docs:1.${SLOT} )
 	selinux? ( sec-policy/selinux-java )
 	!headless-awt? (
 		x11-libs/libX11
@@ -40,19 +43,25 @@ RDEPEND="
 		x11-libs/libXi
 		x11-libs/libXrender
 		x11-libs/libXtst
-	)"
+	)
+"
 
-PDEPEND="webstart? ( >=dev-java/icedtea-web-1.6.1:0 )
-	nsplugin? ( >=dev-java/icedtea-web-1.6.1:0[nsplugin] )"
-
-RESTRICT="preserve-libs splitdebug"
+RESTRICT="preserve-libs strip"
 QA_PREBUILT="*"
 
 S="${WORKDIR}/jdk${MY_PV}"
 
+src_unpack() {
+	default
+	# 753575
+	if use arm; then
+		mv -v "${S}"* "${S}" || die
+	fi
+}
+
 src_install() {
 	local dest="/opt/${P}"
-	local ddest="${ED}${dest#/}"
+	local ddest="${ED%/}/${dest#/}"
 
 	rm ASSEMBLY_EXCEPTION LICENSE THIRD_PARTY_README || die
 
@@ -68,7 +77,7 @@ src_install() {
 	fi
 
 	if use headless-awt ; then
-		rm -fvr jre/lib/*/lib*{[jx]awt,splashscreen}* \
+		rm -fvr {,jre/}lib/*/lib*{[jx]awt,splashscreen}* \
 			{,jre/}bin/policytool bin/appletviewer || die
 	fi
 
@@ -76,26 +85,15 @@ src_install() {
 		rm -v src.zip || die
 	fi
 
+	rm -v jre/lib/security/cacerts || die
+	dosym ../../../../../etc/ssl/certs/java/cacerts \
+		"${dest}"/jre/lib/security/cacerts
+
 	dodir "${dest}"
 	cp -pPR * "${ddest}" || die
 
-	use gentoo-vm && java-vm_install-env "${FILESDIR}"/${PN}-${SLOT}.env.sh
+	java-vm_install-env "${FILESDIR}"/${PN}-${SLOT}.env.sh
 	java-vm_set-pax-markings "${ddest}"
 	java-vm_revdep-mask
 	java-vm_sandbox-predict /dev/random /proc/self/coredump_filter
-}
-
-pkg_postinst() {
-	java-vm-2_pkg_postinst
-
-	if use gentoo-vm ; then
-		ewarn "WARNING! You have enabled the gentoo-vm USE flag, making this JDK"
-		ewarn "recognised by the system. This will almost certainly break things."
-	else
-		ewarn "The experimental gentoo-vm USE flag has not been enabled so this JDK"
-		ewarn "will not be recognised by the system. For example, simply calling"
-		ewarn "\"java\" will launch a different JVM. This is necessary until Gentoo"
-		ewarn "fully supports OpenJDK 8. This JDK must therefore be invoked using its"
-		ewarn "absolute location under ${EPREFIX}/opt/${P}."
-	fi
 }

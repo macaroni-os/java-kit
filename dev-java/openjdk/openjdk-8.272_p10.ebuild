@@ -1,31 +1,49 @@
-# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 
 inherit check-reqs eapi7-ver flag-o-matic java-pkg-2 java-vm-2 multiprocessing pax-utils toolchain-funcs
 
-MY_PV=$(ver_rs 1 'u' 2 '-' ${PV//p/b})
+# we need latest -ga tag from hg, but want to keep build number as well
+# as _p component of the gentoo version string.
+
+MY_PV=$(ver_rs 1 'u' 2 '-' ${PV%_p*}-ga)
+MY_PN_AARCH64="${PN}-aarch64-shenandoah"
+MY_PV_AARCH64="$(ver_rs 1 'u' 2 '-' ${PV/_p/-b})"
+MY_P_AARCH64="${MY_PN_AARCH64/#${PN}-}-jdk${MY_PV_AARCH64}"
 
 BASE_URI="https://hg.${PN}.java.net/jdk8u/jdk8u"
+AARCH64_URI="https://hg.${PN}.java.net/aarch64-port/jdk8u-shenandoah"
 
 DESCRIPTION="Open source implementation of the Java programming language"
 HOMEPAGE="https://openjdk.java.net"
 SRC_URI="
-	${BASE_URI}/archive/jdk${MY_PV}.tar.bz2 -> ${P}.tar.bz2
-	${BASE_URI}/corba/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-corba-${PV}.tar.bz2
-	${BASE_URI}/hotspot/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-hotspot-${PV}.tar.bz2
-	${BASE_URI}/jaxp/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-jaxp-${PV}.tar.bz2
-	${BASE_URI}/jaxws/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-jaxws-${PV}.tar.bz2
-	${BASE_URI}/jdk/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-jdk-${PV}.tar.bz2
-	${BASE_URI}/langtools/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-langtools-${PV}.tar.bz2
-	${BASE_URI}/nashorn/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-nashorn-${PV}.tar.bz2
+	!arm64? (
+		${BASE_URI}/archive/jdk${MY_PV}.tar.bz2 -> ${P}.tar.bz2
+		${BASE_URI}/corba/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-corba-${PV}.tar.bz2
+		${BASE_URI}/hotspot/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-hotspot-${PV}.tar.bz2
+		${BASE_URI}/jaxp/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-jaxp-${PV}.tar.bz2
+		${BASE_URI}/jaxws/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-jaxws-${PV}.tar.bz2
+		${BASE_URI}/jdk/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-jdk-${PV}.tar.bz2
+		${BASE_URI}/langtools/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-langtools-${PV}.tar.bz2
+		${BASE_URI}/nashorn/archive/jdk${MY_PV}.tar.bz2 -> ${PN}-nashorn-${PV}.tar.bz2
+	)
+	arm64? (
+		${AARCH64_URI}/archive/${MY_P_AARCH64}.tar.bz2 -> ${MY_PN_AARCH64}-${PV}.tar.bz2
+		${AARCH64_URI}/corba/archive/${MY_P_AARCH64}.tar.bz2 -> ${MY_PN_AARCH64}-corba-${PV}.tar.bz2
+		${AARCH64_URI}/hotspot/archive/${MY_P_AARCH64}.tar.bz2 -> ${MY_PN_AARCH64}-hotspot-${PV}.tar.bz2
+		${AARCH64_URI}/jaxp/archive/${MY_P_AARCH64}.tar.bz2 -> ${MY_PN_AARCH64}-jaxp-${PV}.tar.bz2
+		${AARCH64_URI}/jaxws/archive/${MY_P_AARCH64}.tar.bz2 -> ${MY_PN_AARCH64}-jaxws-${PV}.tar.bz2
+		${AARCH64_URI}/jdk/archive/${MY_P_AARCH64}.tar.bz2 -> ${MY_PN_AARCH64}-jdk-${PV}.tar.bz2
+		${AARCH64_URI}/langtools/archive/${MY_P_AARCH64}.tar.bz2 -> ${MY_PN_AARCH64}-langtools-${PV}.tar.bz2
+		${AARCH64_URI}/nashorn/archive/${MY_P_AARCH64}.tar.bz2 -> ${MY_PN_AARCH64}-nashorn-jdk${PV}.tar.bz2
+	)
 "
 
 LICENSE="GPL-2"
 SLOT="$(ver_cut 1)"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
-IUSE="alsa debug cups doc examples gentoo-vm headless-awt +jbootstrap nsplugin +pch selinux source +webstart"
+KEYWORDS="amd64 arm64 ppc64 x86"
+IUSE="alsa debug cups doc examples headless-awt javafx +jbootstrap +pch selinux source"
 
 COMMON_DEPEND="
 	media-libs/freetype:2=
@@ -70,12 +88,7 @@ DEPEND="
 	)
 "
 
-PDEPEND="
-	webstart? ( >=dev-java/icedtea-web-1.6.1:0 )
-	nsplugin? ( >=dev-java/icedtea-web-1.6.1:0[nsplugin] )
-"
-
-S="${WORKDIR}/jdk${SLOT}u-jdk${MY_PV}"
+PDEPEND="javafx? ( dev-java/openjfx:${SLOT} )"
 
 # The space required to build varies wildly depending on USE flags,
 # ranging from 2GB to 16GB. This function is certainly not exact but
@@ -92,56 +105,40 @@ openjdk_check_requirements() {
 
 pkg_pretend() {
 	openjdk_check_requirements
-	has ccache ${FEATURES} && die "FEATURES=ccache doesn't work with ${PN}"
+	if [[ ${MERGE_TYPE} != binary ]]; then
+		has ccache ${FEATURES} && die "FEATURES=ccache doesn't work with ${PN}, bug #677876"
+	fi
 }
 
 pkg_setup() {
 	openjdk_check_requirements
-	java-vm-2_pkg_setup
 
 	JAVA_PKG_WANT_BUILD_VM="openjdk-${SLOT} openjdk-bin-${SLOT} icedtea-${SLOT} icedtea-bin-${SLOT}"
 	JAVA_PKG_WANT_SOURCE="${SLOT}"
 	JAVA_PKG_WANT_TARGET="${SLOT}"
 
-	# The nastiness below is necessary while the gentoo-vm USE flag is
-	# masked. First we call java-pkg-2_pkg_setup if it looks like the
-	# flag was unmasked against one of the possible build VMs. If not,
-	# we try finding one of them in their expected locations. This would
-	# have been slightly less messy if openjdk-bin had been installed to
-	# /opt/${PN}-${SLOT} or if there was a mechanism to install a VM env
-	# file but disable it so that it would not normally be selectable.
+	java-vm-2_pkg_setup
+	java-pkg-2_pkg_setup
+}
 
-	local vm
-	for vm in ${JAVA_PKG_WANT_BUILD_VM}; do
-		if [[ -d ${EPREFIX}/usr/lib/jvm/${vm} ]]; then
-			java-pkg-2_pkg_setup
-			return
-		fi
+src_unpack() {
+	default
+	mv -v "jdk${SLOT}u"* "${P}" || die
+
+	local repo
+	for repo in corba hotspot jdk jaxp jaxws langtools nashorn; do
+		mv -v "${repo}-"* "${P}/${repo}" || die
 	done
-
-	if has_version --host-root dev-java/openjdk:${SLOT}; then
-		export JDK_HOME=${EPREFIX}/usr/$(get_libdir)/openjdk-${SLOT}
-	else
-		if [[ ${MERGE_TYPE} != "binary" ]]; then
-			JDK_HOME=$(best_version --host-root dev-java/openjdk-bin:${SLOT})
-			[[ -n ${JDK_HOME} ]] || die "Build VM not found!"
-			JDK_HOME=${JDK_HOME#*/}
-			JDK_HOME=${EPREFIX}/opt/${JDK_HOME%-r*}
-			export JDK_HOME
-		fi
-	fi
 }
 
 src_prepare() {
 	default
-	chmod +x configure || die
-	local repo
-	for repo in corba hotspot jdk jaxp jaxws langtools nashorn; do
-		ln -s ../"${repo}-jdk${MY_PV}" "${repo}" || die
-	done
+
 	# new warnings in new gcc https://bugs.gentoo.org/685426
 	sed -i '/^WARNINGS_ARE_ERRORS/ s/-Werror/-Wno-error/' \
 		hotspot/make/linux/makefiles/gcc.make || die
+
+	chmod +x configure || die
 }
 
 src_configure() {
@@ -150,6 +147,11 @@ src_configure() {
 
 	# Work around stack alignment issue, bug #647954.
 	use x86 && append-flags -mincoming-stack-boundary=2
+
+	# Work around -fno-common ( GCC10 default ), bug #706638
+	append-flags -fcommon
+
+	tc-export_build_env CC CXX PKG_CONFIG STRIP
 
 	local myconf=(
 			--disable-ccache
@@ -163,8 +165,8 @@ src_configure() {
 			--with-jobs=1
 			--with-num-cores=1
 			--with-update-version="$(ver_cut 2)"
-			--with-build-number="$(ver_cut 4)"
-			--with-milestone="gentoo"
+			--with-build-number="b$(ver_cut 4)"
+			--with-milestone="fcs" # magic variable that means "release version"
 			--with-vendor-name="Gentoo"
 			--with-vendor-url="https://gentoo.org"
 			--with-vendor-bug-url="https://bugs.gentoo.org"
@@ -182,18 +184,22 @@ src_configure() {
 	fi
 
 	(
-		unset _JAVA_OPTIONS JAVA JAVAC XARGS
+		unset _JAVA_OPTIONS JAVA JAVA_TOOL_OPTIONS JAVAC XARGS
 		CFLAGS= CXXFLAGS= LDFLAGS= \
 		CONFIG_SITE=/dev/null \
+		CONFIG_SHELL="${EPREFIX}/bin/bash"
 		econf "${myconf[@]}"
 	)
 }
 
 src_compile() {
-	emake -j1 \
-		$(usex doc docs '') \
-		$(usex jbootstrap bootcycle-images images) \
-		JOBS=$(makeopts_jobs) LOG=debug
+	local myemakeargs=(
+		JOBS=$(makeopts_jobs)
+		LOG=debug
+		$(usex doc docs '')
+		$(usex jbootstrap bootcycle-images images)
+	)
+	emake "${myemakeargs[@]}" -j1 #nowarn
 }
 
 src_install() {
@@ -206,7 +212,7 @@ src_install() {
 		rm -v jre/lib/$(get_system_arch)/libjsoundalsa.* || die
 	fi
 
-	# stupid build system does not remove that
+	# build system does not remove that
 	if use headless-awt ; then
 		rm -fvr jre/lib/$(get_system_arch)/lib*{[jx]awt,splashscreen}* \
 		{,jre/}bin/policytool bin/appletviewer || die
@@ -223,30 +229,20 @@ src_install() {
 	dodir "${dest}"
 	cp -pPR * "${ddest}" || die
 
-	dosym "${EPREFIX}"/etc/ssl/certs/java/cacerts "${dest}"/jre/lib/security/cacerts
+	dosym ../../../../../../etc/ssl/certs/java/cacerts "${dest}"/jre/lib/security/cacerts
 
-	use gentoo-vm && java-vm_install-env "${FILESDIR}"/${PN}-${SLOT}.env.sh
+	java-vm_install-env "${FILESDIR}"/${PN}-${SLOT}.env.sh
 	java-vm_set-pax-markings "${ddest}"
 	java-vm_revdep-mask
 	java-vm_sandbox-predict /dev/random /proc/self/coredump_filter
 
 	if use doc ; then
-		insinto /usr/share/doc/${PF}/html
-		doins -r "${S}"/build/*-release/docs/*
+		docinto html
+		dodoc -r "${S}"/build/*-release/docs/*
 	fi
 }
 
 pkg_postinst() {
 	java-vm-2_pkg_postinst
-
-	if use gentoo-vm ; then
-		ewarn "WARNING! You have enabled the gentoo-vm USE flag, making this JDK"
-		ewarn "recognised by the system. This will almost certainly break things."
-	else
-		ewarn "The experimental gentoo-vm USE flag has not been enabled so this JDK"
-		ewarn "will not be recognised by the system. For example, simply calling"
-		ewarn "\"java\" will launch a different JVM. This is necessary until Gentoo"
-		ewarn "fully supports Java ${SLOT}. This JDK must therefore be invoked using its"
-		ewarn "absolute location under ${EPREFIX}/usr/$(get_libdir)/${PN}-${SLOT}."
-	fi
+	einfo "JavaWebStart functionality provided by icedtea-web package"
 }
