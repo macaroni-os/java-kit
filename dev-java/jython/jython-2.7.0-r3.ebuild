@@ -1,4 +1,3 @@
-# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -6,16 +5,13 @@ JAVA_PKG_IUSE="doc source"
 
 inherit eutils java-pkg-2 java-ant-2 python-utils-r1 flag-o-matic
 
-MY_PV=${PV/_beta/-b}
-MY_P=${PN}-${MY_PV}
-
 DESCRIPTION="An implementation of Python written in Java"
 HOMEPAGE="http://www.jython.org"
-SRC_URI="http://search.maven.org/remotecontent?filepath=org/python/${PN}/${MY_PV}/${MY_P}-sources.jar"
+SRC_URI="http://search.maven.org/remotecontent?filepath=org/python/${PN}/${PV}/${P}-sources.jar"
 
 LICENSE="PSF-2"
 SLOT="2.7"
-KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux ~x86-macos"
+KEYWORDS="*"
 IUSE="examples test"
 
 CP_DEPEND="dev-java/antlr:3
@@ -133,7 +129,6 @@ src_install() {
 	local -x PYTHON="${T}"/jython
 	# we can't get the path from the interpreter since it does some
 	# magic that fails on non-installed copy...
-	local PYTHON_SITEDIR=${EPREFIX}/usr/share/jython-${SLOT}/Lib/site-packages
 	python_export jython${SLOT} EPYTHON
 
 	# compile tests (everything else is compiled already)
@@ -143,6 +138,7 @@ src_install() {
 
 	# for python-exec
 	echo "EPYTHON='${EPYTHON}'" > epython.py || die
+	python_moduleinto "${EPREFIX}/usr/share/jython-${SLOT}/Lib/site-packages"
 	python_domodule epython.py
 
 	# some of the class files end up with newer timestamps than the files they
