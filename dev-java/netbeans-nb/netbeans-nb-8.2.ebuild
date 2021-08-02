@@ -1,13 +1,13 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="6"
 inherit eutils java-pkg-2 java-ant-2
 
 DESCRIPTION="Netbeans IDE Branding"
-HOMEPAGE="http://netbeans.org/"
+HOMEPAGE="https://netbeans.org/"
 SLOT="8.2"
-SOURCE_URL="http://download.netbeans.org/netbeans/8.2/final/zip/netbeans-8.2-201609300101-src.zip"
+SOURCE_URL="https://download.netbeans.org/netbeans/8.2/final/zip/netbeans-8.2-201609300101-src.zip"
 SRC_URI="${SOURCE_URL}
 	https://dev.gentoo.org/~fordfrog/distfiles/netbeans-8.2-build.xml.patch.bz2
 	https://dev.gentoo.org/~fordfrog/distfiles/netbeans-7.0.png"
@@ -46,7 +46,7 @@ src_prepare() {
 	einfo "Deleting bundled class files..."
 	find -name "*.class" -type f | xargs rm -vf
 
-	epatch netbeans-8.2-build.xml.patch
+	eapply netbeans-8.2-build.xml.patch
 
 	einfo "Symlinking external libraries..."
 	java-pkg_jar-from --build-only --into javahelp/external javahelp jhall.jar jhall-2.0_05.jar
