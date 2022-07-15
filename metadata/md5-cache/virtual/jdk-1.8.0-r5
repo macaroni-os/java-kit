@@ -3,6 +3,6 @@ DESCRIPTION=Virtual for Java Development Kit (JDK)
 EAPI=6
 IUSE=headless-awt
 KEYWORDS=*
-RDEPEND=|| ( dev-java/oracle-jdk-bin:1.8[headless-awt=] dev-java/icedtea-bin:8[headless-awt=] dev-java/icedtea:8[headless-awt=] dev-java/openjdk-bin:8[gentoo-vm(+),headless-awt=] dev-java/openjdk:8[gentoo-vm(+),headless-awt=] )
+RDEPEND=|| ( dev-java/icedtea-bin:8[headless-awt=] dev-java/icedtea:8[headless-awt=] dev-java/openjdk-bin:8[gentoo-vm(+),headless-awt=] dev-java/openjdk:8[gentoo-vm(+),headless-awt=] )
 SLOT=1.8
-_md5_=4cccf5dfba85b11c76805a6caa211e10
+_md5_=1439f22dfa3abdaf73310f13d49e366a
