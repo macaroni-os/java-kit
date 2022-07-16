@@ -9,5 +9,4 @@ KEYWORDS="*"
 RDEPEND="|| (
 		virtual/jdk:11
 		dev-java/openjdk-jre-bin:11[gentoo-vm(+)]
-		dev-java/openjdk-jre:11[gentoo-vm(+)]
 	)"
