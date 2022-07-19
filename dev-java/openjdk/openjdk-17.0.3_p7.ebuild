@@ -7,7 +7,7 @@ inherit check-reqs eapi8-dosym flag-o-matic java-pkg-2 java-vm-2 multiprocessing
 
 DESCRIPTION="Open source implementation of the Java programming language"
 HOMEPAGE="https://openjdk.java.net"
-SRC_URI="https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.3%2B7/OpenJDK17U-sources_17.0.3_7.tar.gz"
+SRC_URI="https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.3%2B7/OpenJDK17U-sources_17.0.3_7.tar.gz -> OpenJDK17U-sources_17.0.3_7.tar.gz"
 
 LICENSE="GPL-2"
 KEYWORDS="*"

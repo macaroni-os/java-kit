@@ -7,10 +7,10 @@ inherit java-vm-2
 DESCRIPTION="Prebuilt Java JDK binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
-	amd64? ( https://github.com/adoptium/temurin18-binaries/releases/download/jdk-18.0.1%2B10/OpenJDK18U-jdk_x64_linux_hotspot_18.0.1_10.tar.gz )
-	arm64? ( https://github.com/adoptium/temurin18-binaries/releases/download/jdk-18.0.1%2B10/OpenJDK18U-jdk_aarch64_linux_hotspot_18.0.1_10.tar.gz )
-	ppc64? ( https://github.com/adoptium/temurin18-binaries/releases/download/jdk-18.0.1%2B10/OpenJDK18U-jdk_ppc64le_linux_hotspot_18.0.1_10.tar.gz )
-	arm? ( https://github.com/adoptium/temurin18-binaries/releases/download/jdk-18.0.1%2B10/OpenJDK18U-jdk_arm_linux_hotspot_18.0.1_10.tar.gz )"
+	amd64? ( https://github.com/adoptium/temurin18-binaries/releases/download/jdk-18.0.1%2B10/OpenJDK18U-jdk_x64_linux_hotspot_18.0.1_10.tar.gz -> OpenJDK18U-jdk_x64_linux_hotspot_18.0.1_10.tar.gz )
+	arm64? ( https://github.com/adoptium/temurin18-binaries/releases/download/jdk-18.0.1%2B10/OpenJDK18U-jdk_aarch64_linux_hotspot_18.0.1_10.tar.gz -> OpenJDK18U-jdk_aarch64_linux_hotspot_18.0.1_10.tar.gz )
+	ppc64? ( https://github.com/adoptium/temurin18-binaries/releases/download/jdk-18.0.1%2B10/OpenJDK18U-jdk_ppc64le_linux_hotspot_18.0.1_10.tar.gz -> OpenJDK18U-jdk_ppc64le_linux_hotspot_18.0.1_10.tar.gz )
+	arm? ( https://github.com/adoptium/temurin18-binaries/releases/download/jdk-18.0.1%2B10/OpenJDK18U-jdk_arm_linux_hotspot_18.0.1_10.tar.gz -> OpenJDK18U-jdk_arm_linux_hotspot_18.0.1_10.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
 KEYWORDS="-* amd64 arm arm64 ppc64"
