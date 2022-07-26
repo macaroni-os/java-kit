@@ -7,10 +7,11 @@ inherit java-vm-2
 DESCRIPTION="Prebuilt Java JRE binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
-	amd64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u342-b07/OpenJDK8U-jre_x64_linux_hotspot_8u342b07.tar.gz -> OpenJDK8U-jre_x64_linux_hotspot_8u342b07.tar.gz )"
+	amd64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u342-b07/OpenJDK8U-jre_x64_linux_hotspot_8u342b07.tar.gz -> OpenJDK8U-jre_x64_linux_hotspot_8u342b07.tar.gz )
+	ppc64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u342-b07/OpenJDK8U-jre_ppc64le_linux_hotspot_8u342b07.tar.gz -> OpenJDK8U-jre_ppc64le_linux_hotspot_8u342b07.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64"
+KEYWORDS="-* amd64 ppc64"
 SLOT="$(ver_cut 1)"
 IUSE="alsa cups headless-awt selinux"
 
@@ -56,7 +57,7 @@ src_install() {
 	fi
 
 	rm -v lib/security/cacerts || die
-	dosym -r /etc/ssl/certs/java/cacerts "${dest}"/lib/security/cacerts
+	dosym ../../../../../etc/ssl/certs/java/cacerts "${dest}"/lib/security/cacerts
 
 	dodir "${dest}"
 	cp -pPR * "${ddest}" || die
