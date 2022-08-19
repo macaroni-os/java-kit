@@ -7,13 +7,12 @@ inherit java-vm-2
 DESCRIPTION="Prebuilt Java JRE binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
-	arm64? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.16_8.tar.gz -> OpenJDK11U-jre_aarch64_linux_hotspot_11.0.16_8.tar.gz )
-	amd64? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jre_x64_linux_hotspot_11.0.16_8.tar.gz -> OpenJDK11U-jre_x64_linux_hotspot_11.0.16_8.tar.gz )
-	ppc64? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jre_ppc64le_linux_hotspot_11.0.16_8.tar.gz -> OpenJDK11U-jre_ppc64le_linux_hotspot_11.0.16_8.tar.gz )
-	arm? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jre_arm_linux_hotspot_11.0.16_8.tar.gz -> OpenJDK11U-jre_arm_linux_hotspot_11.0.16_8.tar.gz )"
+	arm? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16.1%2B1/OpenJDK11U-jre_arm_linux_hotspot_11.0.16.1_1.tar.gz -> OpenJDK11U-jre_arm_linux_hotspot_11.0.16.1_1.tar.gz )
+	arm64? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16.1%2B1/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.16.1_1.tar.gz -> OpenJDK11U-jre_aarch64_linux_hotspot_11.0.16.1_1.tar.gz )
+	amd64? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16.1%2B1/OpenJDK11U-jre_x64_linux_hotspot_11.0.16.1_1.tar.gz -> OpenJDK11U-jre_x64_linux_hotspot_11.0.16.1_1.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64 arm arm64 ppc64"
+KEYWORDS="-* amd64 arm arm64"
 SLOT="$(ver_cut 1)"
 IUSE="alsa cups +gentoo-vm headless-awt selinux"
 
@@ -38,7 +37,7 @@ RDEPEND="
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
 
-S="${WORKDIR}/jdk-11.0.16+8-jre"
+S="${WORKDIR}/jdk-11.0.16.1+1-jre"
 
 src_install() {
 	local dest="/opt/${PN}-${SLOT}"
