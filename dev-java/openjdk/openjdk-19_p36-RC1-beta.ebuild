@@ -7,7 +7,7 @@ inherit check-reqs eapi8-dosym flag-o-matic java-pkg-2 java-vm-2 multiprocessing
 
 DESCRIPTION="Open source implementation of the Java programming language"
 HOMEPAGE="https://openjdk.java.net"
-SRC_URI="https://github.com/adoptium/temurin18-binaries/releases/download/jdk-18.0.2%2B9/OpenJDK18U-jdk-sources_18.0.2_9.tar.gz -> OpenJDK18U-jdk-sources_18.0.2_9.tar.gz"
+SRC_URI="https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19%2B36-RC1-beta/OpenJDK19U-jdk-sources_19_36-RC1.tar.gz -> OpenJDK19U-jdk-sources_19_36-RC1.tar.gz"
 
 LICENSE="GPL-2"
 KEYWORDS="*"
@@ -68,7 +68,7 @@ DEPEND="
 	)
 "
 
-S="${WORKDIR}/jdk-18.0.2+9-src"
+S="${WORKDIR}/jdk-19+36-RC1-beta-src"
 
 # The space required to build varies wildly depending on USE flags,
 # ranging from 2GB to 16GB. This function is certainly not exact but
