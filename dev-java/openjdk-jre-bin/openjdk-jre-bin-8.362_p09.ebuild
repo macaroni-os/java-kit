@@ -7,13 +7,10 @@ inherit java-vm-2
 DESCRIPTION="Prebuilt Java JRE binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
-	amd64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u352-b08/OpenJDK8U-jre_x64_linux_hotspot_8u352b08.tar.gz -> OpenJDK8U-jre_x64_linux_hotspot_8u352b08.tar.gz )
-	ppc64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u352-b08/OpenJDK8U-jre_ppc64le_linux_hotspot_8u352b08.tar.gz -> OpenJDK8U-jre_ppc64le_linux_hotspot_8u352b08.tar.gz )
-	arm64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u352-b08/OpenJDK8U-jre_aarch64_linux_hotspot_8u352b08.tar.gz -> OpenJDK8U-jre_aarch64_linux_hotspot_8u352b08.tar.gz )
-	arm? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u352-b08/OpenJDK8U-jre_arm_linux_hotspot_8u352b08.tar.gz -> OpenJDK8U-jre_arm_linux_hotspot_8u352b08.tar.gz )"
+	amd64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u362-b09/OpenJDK8U-jre_x64_linux_hotspot_8u362b09.tar.gz -> OpenJDK8U-jre_x64_linux_hotspot_8u362b09.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64 arm arm64 ppc64"
+KEYWORDS="-* amd64"
 SLOT="$(ver_cut 1)"
 IUSE="alsa cups headless-awt selinux"
 
@@ -38,7 +35,7 @@ RDEPEND="
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
 
-S="${WORKDIR}/jdk8u352-b08-jre"
+S="${WORKDIR}/jdk8u362-b09-jre"
 
 src_install() {
 	local dest="/opt/${P}"
