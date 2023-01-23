@@ -9,10 +9,11 @@ HOMEPAGE="https://adoptium.net"
 SRC_URI="
 	amd64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jdk_x64_linux_hotspot_17.0.6_10.tar.gz -> OpenJDK17U-jdk_x64_linux_hotspot_17.0.6_10.tar.gz )
 	arm? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jdk_arm_linux_hotspot_17.0.6_10.tar.gz -> OpenJDK17U-jdk_arm_linux_hotspot_17.0.6_10.tar.gz )
-	arm64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.6_10.tar.gz -> OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.6_10.tar.gz )"
+	arm64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.6_10.tar.gz -> OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.6_10.tar.gz )
+	ppc64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jdk_ppc64le_linux_hotspot_17.0.6_10.tar.gz -> OpenJDK17U-jdk_ppc64le_linux_hotspot_17.0.6_10.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64 arm arm64"
+KEYWORDS="-* amd64 arm arm64 ppc64"
 SLOT=$(ver_cut 1)
 IUSE="alsa cups headless-awt selinux source"
 
