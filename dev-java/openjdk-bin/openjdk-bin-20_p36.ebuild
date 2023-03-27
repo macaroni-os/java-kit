@@ -7,13 +7,12 @@ inherit java-vm-2
 DESCRIPTION="Prebuilt Java JDK binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
-	amd64? ( https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_x64_linux_hotspot_19.0.2_7.tar.gz -> OpenJDK19U-jdk_x64_linux_hotspot_19.0.2_7.tar.gz )
-	arm? ( https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_arm_linux_hotspot_19.0.2_7.tar.gz -> OpenJDK19U-jdk_arm_linux_hotspot_19.0.2_7.tar.gz )
-	ppc64? ( https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_ppc64le_linux_hotspot_19.0.2_7.tar.gz -> OpenJDK19U-jdk_ppc64le_linux_hotspot_19.0.2_7.tar.gz )
-	arm64? ( https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_aarch64_linux_hotspot_19.0.2_7.tar.gz -> OpenJDK19U-jdk_aarch64_linux_hotspot_19.0.2_7.tar.gz )"
+	arm64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jdk_aarch64_linux_hotspot_20_36.tar.gz -> OpenJDK20U-jdk_aarch64_linux_hotspot_20_36.tar.gz )
+	amd64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jdk_x64_linux_hotspot_20_36.tar.gz -> OpenJDK20U-jdk_x64_linux_hotspot_20_36.tar.gz )
+	ppc64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jdk_ppc64le_linux_hotspot_20_36.tar.gz -> OpenJDK20U-jdk_ppc64le_linux_hotspot_20_36.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64 arm arm64 ppc64"
+KEYWORDS="-* amd64 arm64 ppc64"
 SLOT=$(ver_cut 1)
 IUSE="alsa cups headless-awt selinux source"
 
@@ -39,7 +38,7 @@ RDEPEND="
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
 
-S="${WORKDIR}/jdk-19.0.2+7"
+S="${WORKDIR}/jdk-20+36"
 
 src_unpack() {
 	default

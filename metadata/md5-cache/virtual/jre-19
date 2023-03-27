@@ -1,7 +1,0 @@
-DEFINED_PHASES=-
-DESCRIPTION=Virtual for Java Runtime Environment (JRE)
-EAPI=7
-KEYWORDS=*
-RDEPEND=|| ( virtual/jdk:19 dev-java/oracle-jre-bin:19[gentoo-vm(+)] dev-java/openjdk-jre-bin:19[gentoo-vm(+)] dev-java/openjdk-jre:19[gentoo-vm(+)] )
-SLOT=19
-_md5_=8cbc8aeb90b60aea31423be0200fdc8d
