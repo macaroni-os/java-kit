@@ -7,10 +7,11 @@ inherit java-vm-2
 DESCRIPTION="Prebuilt Java JDK binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
-	amd64? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.19%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.19_7.tar.gz -> OpenJDK11U-jdk_x64_linux_hotspot_11.0.19_7.tar.gz )"
+	amd64? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.19%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.19_7.tar.gz -> OpenJDK11U-jdk_x64_linux_hotspot_11.0.19_7.tar.gz )
+	arm64? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.19%2B7/OpenJDK11U-jdk_aarch64_linux_hotspot_11.0.19_7.tar.gz -> OpenJDK11U-jdk_aarch64_linux_hotspot_11.0.19_7.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64"
+KEYWORDS="-* amd64 arm64"
 SLOT=$(ver_cut 1)
 IUSE="alsa cups headless-awt selinux source"
 
