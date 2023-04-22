@@ -7,12 +7,11 @@ inherit java-vm-2
 DESCRIPTION="Prebuilt Java JRE binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
-	arm64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jre_aarch64_linux_hotspot_20_36.tar.gz -> OpenJDK20U-jre_aarch64_linux_hotspot_20_36.tar.gz )
-	amd64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jre_x64_linux_hotspot_20_36.tar.gz -> OpenJDK20U-jre_x64_linux_hotspot_20_36.tar.gz )
-	ppc64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jre_ppc64le_linux_hotspot_20_36.tar.gz -> OpenJDK20U-jre_ppc64le_linux_hotspot_20_36.tar.gz )"
+	amd64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20.0.1%2B9/OpenJDK20U-jre_x64_linux_hotspot_20.0.1_9.tar.gz -> OpenJDK20U-jre_x64_linux_hotspot_20.0.1_9.tar.gz )
+	arm64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20.0.1%2B9/OpenJDK20U-jre_aarch64_linux_hotspot_20.0.1_9.tar.gz -> OpenJDK20U-jre_aarch64_linux_hotspot_20.0.1_9.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64 arm64 ppc64"
+KEYWORDS="-* amd64 arm64"
 SLOT="$(ver_cut 1)"
 IUSE="alsa cups +gentoo-vm headless-awt selinux"
 
@@ -37,7 +36,7 @@ RDEPEND="
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
 
-S="${WORKDIR}/jdk-20+36-jre"
+S="${WORKDIR}/jdk-20.0.1+9-jre"
 
 src_install() {
 	local dest="/opt/${PN}-${SLOT}"
