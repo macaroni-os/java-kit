@@ -4,27 +4,27 @@ EAPI=7
 
 inherit java-vm-2
 
-DESCRIPTION="Prebuilt Java JDK binaries provided by Eclipse Temurin"
+DESCRIPTION="Prebuilt Java JRE binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
-	arm64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jdk_aarch64_linux_hotspot_20_36.tar.gz -> OpenJDK20U-jdk_aarch64_linux_hotspot_20_36.tar.gz )
-	amd64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jdk_x64_linux_hotspot_20_36.tar.gz -> OpenJDK20U-jdk_x64_linux_hotspot_20_36.tar.gz )
-	ppc64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jdk_ppc64le_linux_hotspot_20_36.tar.gz -> OpenJDK20U-jdk_ppc64le_linux_hotspot_20_36.tar.gz )"
+	amd64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jre_x64_linux_hotspot_17.0.7_7.tar.gz -> OpenJDK17U-jre_x64_linux_hotspot_17.0.7_7.tar.gz )
+	arm64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jre_aarch64_linux_hotspot_17.0.7_7.tar.gz -> OpenJDK17U-jre_aarch64_linux_hotspot_17.0.7_7.tar.gz )
+	ppc64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jre_ppc64le_linux_hotspot_17.0.7_7.tar.gz -> OpenJDK17U-jre_ppc64le_linux_hotspot_17.0.7_7.tar.gz )
+	arm? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jre_arm_linux_hotspot_17.0.7_7.tar.gz -> OpenJDK17U-jre_arm_linux_hotspot_17.0.7_7.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64 arm64 ppc64"
-SLOT=$(ver_cut 1)
-IUSE="alsa cups headless-awt selinux source"
+KEYWORDS="-* amd64 arm arm64 ppc64"
+SLOT="$(ver_cut 1)"
+IUSE="alsa cups +gentoo-vm headless-awt selinux"
 
 RDEPEND="
-	>=sys-apps/baselayout-java-0.1.0-r1
 	media-libs/fontconfig:1.0
 	media-libs/freetype:2
-	media-libs/harfbuzz
+	>net-libs/libnet-1.1
+	>=sys-apps/baselayout-java-0.1.0-r1
 	>=sys-libs/glibc-2.2.5:*
 	sys-libs/zlib
 	alsa? ( media-libs/alsa-lib )
-	arm? ( dev-libs/libffi-compat:6 )
 	cups? ( net-print/cups )
 	selinux? ( sec-policy/selinux-java )
 	!headless-awt? (
@@ -38,27 +38,16 @@ RDEPEND="
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
 
-S="${WORKDIR}/jdk-20+36"
-
-src_unpack() {
-	default
-	# 753575
-	if use arm; then
-		mv -v "${S}"* "${S}" || die
-	fi
-}
+S="${WORKDIR}/jdk-17.0.7+7-jre"
 
 src_install() {
-	local dest="/opt/${P}"
+	local dest="/opt/${PN}-${SLOT}"
 	local ddest="${ED}/${dest#/}"
 
 	# Not sure why they bundle this as it's commonly available and they
 	# only do so on x86_64. It's needed by libfontmanager.so. IcedTea
 	# also has an explicit dependency while Oracle seemingly dlopens it.
 	rm -vf lib/libfreetype.so || die
-
-	# prefer system copy # https://bugs.gentoo.org/776676
-	rm -vf lib/libharfbuzz.so || die
 
 	# Oracle and IcedTea have libjsoundalsa.so depending on
 	# libasound.so.2 but AdoptOpenJDK only has libjsound.so. Weird.
@@ -70,18 +59,11 @@ src_install() {
 		rm -v lib/lib*{[jx]awt,splashscreen}* || die
 	fi
 
-	if ! use source ; then
-		rm -v lib/src.zip || die
-	fi
-
 	rm -v lib/security/cacerts || die
-	dosym ../../../../etc/ssl/certs/java/cacerts "${dest}"/lib/security/cacerts
+	dosym ../../../../../etc/ssl/certs/java/cacerts "${dest}"/lib/security/cacerts
 
 	dodir "${dest}"
 	cp -pPR * "${ddest}" || die
-
-	# provide stable symlink
-	dosym "${P}" "/opt/${PN}-${SLOT}"
 
 	java-vm_install-env "${FILESDIR}"/${PN}.env.sh
 	java-vm_set-pax-markings "${ddest}"
