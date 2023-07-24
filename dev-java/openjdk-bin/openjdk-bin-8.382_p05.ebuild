@@ -8,10 +8,11 @@ DESCRIPTION="Prebuilt Java JDK binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
 	amd64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u382-b05/OpenJDK8U-jdk_x64_linux_hotspot_8u382b05.tar.gz -> OpenJDK8U-jdk_x64_linux_hotspot_8u382b05.tar.gz )
-	arm64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u382-b05/OpenJDK8U-jdk_aarch64_linux_hotspot_8u382b05.tar.gz -> OpenJDK8U-jdk_aarch64_linux_hotspot_8u382b05.tar.gz )"
+	arm64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u382-b05/OpenJDK8U-jdk_aarch64_linux_hotspot_8u382b05.tar.gz -> OpenJDK8U-jdk_aarch64_linux_hotspot_8u382b05.tar.gz )
+	ppc64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u382-b05/OpenJDK8U-jdk_ppc64le_linux_hotspot_8u382b05.tar.gz -> OpenJDK8U-jdk_ppc64le_linux_hotspot_8u382b05.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64 arm64"
+KEYWORDS="-* amd64 arm64 ppc64"
 SLOT=$(ver_cut 1)
 IUSE="alsa cups examples headless-awt selinux source"
 
