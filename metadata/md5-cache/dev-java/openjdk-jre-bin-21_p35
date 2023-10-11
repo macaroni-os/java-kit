@@ -9,7 +9,7 @@ KEYWORDS=-* amd64 arm64
 LICENSE=GPL-2-with-classpath-exception
 RDEPEND=media-libs/fontconfig:1.0 media-libs/freetype:2 >net-libs/libnet-1.1 >=sys-apps/baselayout-java-0.1.0-r1 >=sys-libs/glibc-2.2.5:* sys-libs/zlib alsa? ( media-libs/alsa-lib ) cups? ( net-print/cups ) selinux? ( sec-policy/selinux-java ) !headless-awt? ( x11-libs/libX11 x11-libs/libXext x11-libs/libXi x11-libs/libXrender x11-libs/libXtst ) dev-java/java-config app-eselect/eselect-java
 RESTRICT=preserve-libs splitdebug
-SLOT=20
-SRC_URI=amd64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20.0.2%2B9/OpenJDK20U-jre_x64_linux_hotspot_20.0.2_9.tar.gz -> OpenJDK20U-jre_x64_linux_hotspot_20.0.2_9.tar.gz ) arm64? ( https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20.0.2%2B9/OpenJDK20U-jre_aarch64_linux_hotspot_20.0.2_9.tar.gz -> OpenJDK20U-jre_aarch64_linux_hotspot_20.0.2_9.tar.gz )
+SLOT=21
+SRC_URI=amd64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21%2B35/OpenJDK21U-jre_x64_linux_hotspot_21_35.tar.gz -> OpenJDK21U-jre_x64_linux_hotspot_21_35.tar.gz ) arm64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21%2B35/OpenJDK21U-jre_aarch64_linux_hotspot_21_35.tar.gz -> OpenJDK21U-jre_aarch64_linux_hotspot_21_35.tar.gz )
 _eclasses_=java-vm-2	fe7887973e07a504c9f011de30bc9c48	multilib	d410501a125f99ffb560b0c523cd3d1e	pax-utils	db85a3c508cf82c45f24b2723791cc93	prefix	e51c7882b7b721e54e684f7eb143cbfe	toolchain-funcs	24921b57d6561d87cbef4916a296ada4	xdg-utils	14d00d009167652b1fa363e55effe213
-_md5_=6b9564ac87c5cf8996dfc4e30416e328
+_md5_=d8def9233dbd5af5d16a6b5420038276
