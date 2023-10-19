@@ -7,13 +7,11 @@ inherit java-vm-2
 DESCRIPTION="Prebuilt Java JRE binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
-	amd64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.8.1%2B1/OpenJDK17U-jre_x64_linux_hotspot_17.0.8.1_1.tar.gz -> OpenJDK17U-jre_x64_linux_hotspot_17.0.8.1_1.tar.gz )
-	ppc64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.8.1%2B1/OpenJDK17U-jre_ppc64le_linux_hotspot_17.0.8.1_1.tar.gz -> OpenJDK17U-jre_ppc64le_linux_hotspot_17.0.8.1_1.tar.gz )
-	arm64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.8.1%2B1/OpenJDK17U-jre_aarch64_linux_hotspot_17.0.8.1_1.tar.gz -> OpenJDK17U-jre_aarch64_linux_hotspot_17.0.8.1_1.tar.gz )
-	arm? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.8.1%2B1/OpenJDK17U-jre_arm_linux_hotspot_17.0.8.1_1.tar.gz -> OpenJDK17U-jre_arm_linux_hotspot_17.0.8.1_1.tar.gz )"
+	amd64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_x64_linux_hotspot_17.0.9_9.tar.gz -> OpenJDK17U-jre_x64_linux_hotspot_17.0.9_9.tar.gz )
+	arm64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_aarch64_linux_hotspot_17.0.9_9.tar.gz -> OpenJDK17U-jre_aarch64_linux_hotspot_17.0.9_9.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64 arm arm64 ppc64"
+KEYWORDS="-* amd64 arm64"
 SLOT="$(ver_cut 1)"
 IUSE="alsa cups +gentoo-vm headless-awt selinux"
 
@@ -38,7 +36,7 @@ RDEPEND="
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
 
-S="${WORKDIR}/jdk-17.0.8.1+1-jre"
+S="${WORKDIR}/jdk-17.0.9+9-jre"
 
 src_install() {
 	local dest="/opt/${PN}-${SLOT}"
