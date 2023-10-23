@@ -8,10 +8,11 @@ DESCRIPTION="Prebuilt Java JRE binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
 	amd64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_x64_linux_hotspot_17.0.9_9.tar.gz -> OpenJDK17U-jre_x64_linux_hotspot_17.0.9_9.tar.gz )
-	arm64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_aarch64_linux_hotspot_17.0.9_9.tar.gz -> OpenJDK17U-jre_aarch64_linux_hotspot_17.0.9_9.tar.gz )"
+	arm64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_aarch64_linux_hotspot_17.0.9_9.tar.gz -> OpenJDK17U-jre_aarch64_linux_hotspot_17.0.9_9.tar.gz )
+	ppc64? ( https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_ppc64le_linux_hotspot_17.0.9_9.tar.gz -> OpenJDK17U-jre_ppc64le_linux_hotspot_17.0.9_9.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64 arm64"
+KEYWORDS="-* amd64 arm64 ppc64"
 SLOT="$(ver_cut 1)"
 IUSE="alsa cups +gentoo-vm headless-awt selinux"
 
