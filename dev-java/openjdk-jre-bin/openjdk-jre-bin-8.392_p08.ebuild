@@ -8,10 +8,11 @@ DESCRIPTION="Prebuilt Java JRE binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
 	arm64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u392-b08/OpenJDK8U-jre_aarch64_linux_hotspot_8u392b08.tar.gz -> OpenJDK8U-jre_aarch64_linux_hotspot_8u392b08.tar.gz )
-	amd64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u392-b08/OpenJDK8U-jre_x64_linux_hotspot_8u392b08.tar.gz -> OpenJDK8U-jre_x64_linux_hotspot_8u392b08.tar.gz )"
+	amd64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u392-b08/OpenJDK8U-jre_x64_linux_hotspot_8u392b08.tar.gz -> OpenJDK8U-jre_x64_linux_hotspot_8u392b08.tar.gz )
+	ppc64? ( https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u392-b08/OpenJDK8U-jre_ppc64le_linux_hotspot_8u392b08.tar.gz -> OpenJDK8U-jre_ppc64le_linux_hotspot_8u392b08.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64 arm64"
+KEYWORDS="-* amd64 arm64 ppc64"
 SLOT="$(ver_cut 1)"
 IUSE="alsa cups headless-awt selinux"
 
