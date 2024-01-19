@@ -4,27 +4,27 @@ EAPI=7
 
 inherit java-vm-2
 
-DESCRIPTION="Prebuilt Java JDK binaries provided by Eclipse Temurin"
+DESCRIPTION="Prebuilt Java JRE binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
-	amd64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_x64_linux_hotspot_21.0.1_12.tar.gz -> OpenJDK21U-jdk_x64_linux_hotspot_21.0.1_12.tar.gz )
-	arm64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_aarch64_linux_hotspot_21.0.1_12.tar.gz -> OpenJDK21U-jdk_aarch64_linux_hotspot_21.0.1_12.tar.gz )
-	ppc64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_ppc64le_linux_hotspot_21.0.1_12.tar.gz -> OpenJDK21U-jdk_ppc64le_linux_hotspot_21.0.1_12.tar.gz )"
+	arm64? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.21_9.tar.gz -> OpenJDK11U-jre_aarch64_linux_hotspot_11.0.21_9.tar.gz )
+	amd64? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jre_x64_linux_hotspot_11.0.21_9.tar.gz -> OpenJDK11U-jre_x64_linux_hotspot_11.0.21_9.tar.gz )
+	ppc64? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jre_ppc64le_linux_hotspot_11.0.21_9.tar.gz -> OpenJDK11U-jre_ppc64le_linux_hotspot_11.0.21_9.tar.gz )
+	arm? ( https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jre_arm_linux_hotspot_11.0.21_9.tar.gz -> OpenJDK11U-jre_arm_linux_hotspot_11.0.21_9.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
-KEYWORDS="-* amd64 arm64 ppc64"
-SLOT=$(ver_cut 1)
-IUSE="alsa cups headless-awt selinux source"
+KEYWORDS="-* amd64 arm arm64 ppc64"
+SLOT="$(ver_cut 1)"
+IUSE="alsa cups +gentoo-vm headless-awt selinux"
 
 RDEPEND="
-	>=sys-apps/baselayout-java-0.1.0-r1
 	media-libs/fontconfig:1.0
 	media-libs/freetype:2
-	media-libs/harfbuzz
+	>net-libs/libnet-1.1
+	>=sys-apps/baselayout-java-0.1.0-r1
 	>=sys-libs/glibc-2.2.5:*
 	sys-libs/zlib
 	alsa? ( media-libs/alsa-lib )
-	arm? ( dev-libs/libffi-compat:6 )
 	cups? ( net-print/cups )
 	selinux? ( sec-policy/selinux-java )
 	!headless-awt? (
@@ -38,27 +38,16 @@ RDEPEND="
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
 
-S="${WORKDIR}/jdk-21.0.1+12"
-
-src_unpack() {
-	default
-	# 753575
-	if use arm; then
-		mv -v "${S}"* "${S}" || die
-	fi
-}
+S="${WORKDIR}/jdk-11.0.21+9-jre"
 
 src_install() {
-	local dest="/opt/${P}"
+	local dest="/opt/${PN}-${SLOT}"
 	local ddest="${ED}/${dest#/}"
 
 	# Not sure why they bundle this as it's commonly available and they
 	# only do so on x86_64. It's needed by libfontmanager.so. IcedTea
 	# also has an explicit dependency while Oracle seemingly dlopens it.
 	rm -vf lib/libfreetype.so || die
-
-	# prefer system copy # https://bugs.gentoo.org/776676
-	rm -vf lib/libharfbuzz.so || die
 
 	# Oracle and IcedTea have libjsoundalsa.so depending on
 	# libasound.so.2 but AdoptOpenJDK only has libjsound.so. Weird.
@@ -70,18 +59,11 @@ src_install() {
 		rm -v lib/lib*{[jx]awt,splashscreen}* || die
 	fi
 
-	if ! use source ; then
-		rm -v lib/src.zip || die
-	fi
-
 	rm -v lib/security/cacerts || die
-	dosym ../../../../etc/ssl/certs/java/cacerts "${dest}"/lib/security/cacerts
+	dosym ../../../../../etc/ssl/certs/java/cacerts "${dest}"/lib/security/cacerts
 
 	dodir "${dest}"
 	cp -pPR * "${ddest}" || die
-
-	# provide stable symlink
-	dosym "${P}" "/opt/${PN}-${SLOT}"
 
 	java-vm_install-env "${FILESDIR}"/${PN}.env.sh
 	java-vm_set-pax-markings "${ddest}"
