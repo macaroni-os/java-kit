@@ -7,10 +7,10 @@ inherit java-vm-2
 DESCRIPTION="Prebuilt Java JRE binaries provided by Eclipse Temurin"
 HOMEPAGE="https://adoptium.net"
 SRC_URI="
-	arm64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.5_11.tar.gz -> OpenJDK21U-jre_aarch64_linux_hotspot_21.0.5_11.tar.gz )
-	amd64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jre_x64_linux_hotspot_21.0.5_11.tar.gz -> OpenJDK21U-jre_x64_linux_hotspot_21.0.5_11.tar.gz )
-	riscv64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jre_riscv64_linux_hotspot_21.0.5_11.tar.gz -> OpenJDK21U-jre_riscv64_linux_hotspot_21.0.5_11.tar.gz )
-	ppc64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jre_ppc64le_linux_hotspot_21.0.5_11.tar.gz -> OpenJDK21U-jre_ppc64le_linux_hotspot_21.0.5_11.tar.gz )"
+	amd64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.6%2B7/OpenJDK21U-jre_x64_linux_hotspot_21.0.6_7.tar.gz -> OpenJDK21U-jre_x64_linux_hotspot_21.0.6_7.tar.gz )
+	arm64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.6%2B7/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.6_7.tar.gz -> OpenJDK21U-jre_aarch64_linux_hotspot_21.0.6_7.tar.gz )
+	ppc64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.6%2B7/OpenJDK21U-jre_ppc64le_linux_hotspot_21.0.6_7.tar.gz -> OpenJDK21U-jre_ppc64le_linux_hotspot_21.0.6_7.tar.gz )
+	riscv64? ( https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.6%2B7/OpenJDK21U-jre_riscv64_linux_hotspot_21.0.6_7.tar.gz -> OpenJDK21U-jre_riscv64_linux_hotspot_21.0.6_7.tar.gz )"
 
 LICENSE="GPL-2-with-classpath-exception"
 KEYWORDS="-* amd64 arm64 ppc64 riscv64"
@@ -38,7 +38,7 @@ RDEPEND="
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
 
-S="${WORKDIR}/jdk-21.0.5+11-jre"
+S="${WORKDIR}/jdk-21.0.6+7-jre"
 
 src_install() {
 	local dest="/opt/${PN}-${SLOT}"
