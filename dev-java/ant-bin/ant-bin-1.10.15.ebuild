@@ -10,7 +10,7 @@ DESCRIPTION="Project Management and Comprehension Tool for Java"
 HOMEPAGE="https://ant.apache.org/"
 SRC_URI="https://dlcdn.apache.org/ant/binaries/apache-ant-1.10.15-bin.tar.xz -> apache-ant-1.10.15-bin.tar.xz"
 LICENSE="Apache-2.0"
-SLOT="1.1"
+SLOT="1.10"
 KEYWORDS="*"
 RDEPEND="|| (
 	  virtual/jre:11
